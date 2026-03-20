@@ -1,0 +1,1577 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- ============================================================
+       EDIT THIS: Change "Chanakya Naidu" to your name in the tab title
+  ============================================================ -->
+  <title>Chanakya Naidu — Portfolio</title>
+
+  <!-- ============================================================
+       FONTS: Loaded automatically from Google — no download needed.
+       - "Cormorant Garamond" = elegant serif for headings
+       - "DM Sans" = clean modern font for body text
+  ============================================================ -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ============================================================
+       DESIGN TOKENS
+       These are the master variables for colors, fonts, and spacing.
+       Change a value here once and it updates everywhere on the page.
+    ============================================================ */
+    :root {
+      --bg:           #faf8f4;       /* warm off-white page background */
+      --bg-card:      #ffffff;       /* white card surfaces */
+      --bg-subtle:    #f3f0ea;       /* slightly darker surface */
+      --border:       #e8e2d9;       /* light border between elements */
+      --text:         #1a1916;       /* near-black for body text */
+      --muted:        #7a756c;       /* grey for secondary text */
+      --accent:       #005698;       /* your primary blue — used everywhere */
+      --accent-dark:  #003d6b;       /* darker blue for hover states */
+      --accent-lt:    #e8f0f8;       /* very light blue for pill backgrounds */
+      --serif:        'Cormorant Garamond', Georgia, serif;
+      --sans:         'DM Sans', system-ui, sans-serif;
+      --radius:       14px;          /* rounded corners — larger = rounder */
+      --radius-sm:    8px;
+      --shadow:       0 4px 24px rgba(0, 86, 152, 0.08);
+      --shadow-hover: 0 12px 40px rgba(0, 86, 152, 0.16);
+      --nav-h:        68px;          /* height of the top navigation bar */
+      --max:          1160px;        /* maximum page width */
+    }
+
+    /* ============================================================
+       GLOBAL RESET — Clears default browser spacing and styling
+    ============================================================ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      font-size: 16px;
+      line-height: 1.7;
+      font-weight: 300;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+    img { display: block; max-width: 100%; }
+    a { color: inherit; text-decoration: none; }
+
+    /* ============================================================
+       SCROLL PROGRESS BAR
+       The thin blue line at the very top that fills as you scroll.
+    ============================================================ */
+    #progress-bar {
+      position: fixed;
+      top: 0; left: 0;
+      height: 3px;
+      width: 0%;
+      background: linear-gradient(90deg, var(--accent), #4da6ff);
+      z-index: 200;
+      transition: width .08s linear;
+      border-radius: 0 2px 2px 0;
+    }
+
+    /* ============================================================
+       REUSABLE UTILITIES
+    ============================================================ */
+    .container { max-width: var(--max); margin: 0 auto; padding: 0 48px; }
+
+    /* Small uppercase label above section headings */
+    .eyebrow {
+      font-family: var(--sans);
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: .24em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 14px;
+      display: block;
+    }
+
+    /* Pill-shaped tags used throughout cards */
+    .tag {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 400;
+      letter-spacing: .04em;
+      padding: 4px 12px;
+      border: 1px solid var(--border);
+      border-radius: 99px;
+      color: var(--muted);
+      background: var(--bg-card);
+      transition: border-color .2s, color .2s;
+    }
+    .tag:hover { border-color: var(--accent); color: var(--accent); }
+
+    /* Blue-filled tag variant */
+    .tag-blue {
+      background: var(--accent-lt);
+      color: var(--accent);
+      border-color: transparent;
+      font-weight: 500;
+    }
+
+    /* Thin horizontal line between sections */
+    .section-divider { border: none; border-top: 1px solid var(--border); margin: 0; }
+
+    /* ============================================================
+       SCROLL REVEAL ANIMATION
+       Elements start invisible and fade up. The JS at the bottom
+       adds class "visible" when they enter the viewport.
+    ============================================================ */
+    .reveal {
+      opacity: 0;
+      transform: translateY(28px);
+      transition: opacity .75s cubic-bezier(.16,1,.3,1),
+                  transform .75s cubic-bezier(.16,1,.3,1);
+    }
+    .reveal.visible { opacity: 1; transform: none; }
+    /* Stagger delays so items in a row animate one-by-one */
+    .reveal-d1 { transition-delay: .12s; }
+    .reveal-d2 { transition-delay: .22s; }
+    .reveal-d3 { transition-delay: .32s; }
+    .reveal-d4 { transition-delay: .42s; }
+
+    /* ============================================================
+       NAVIGATION BAR
+       Fixed at the top. Blurs content behind it (frosted glass).
+    ============================================================ */
+    nav {
+      position: fixed;
+      top: 3px; left: 0; right: 0;
+      height: var(--nav-h);
+      background: rgba(250, 248, 244, 0.88);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      z-index: 100;
+      transition: box-shadow .3s;
+    }
+    nav.scrolled { box-shadow: 0 2px 24px rgba(0,0,0,.07); }
+
+    .nav-inner {
+      max-width: var(--max);
+      margin: 0 auto;
+      padding: 0 48px;
+      height: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    /* Your name — top left of the nav */
+    .nav-logo {
+      font-family: var(--serif);
+      font-size: 22px;
+      font-weight: 600;
+      letter-spacing: -.01em;
+      color: var(--text);
+      transition: color .2s;
+    }
+    .nav-logo:hover { color: var(--accent); }
+
+    .nav-links {
+      display: flex;
+      gap: 32px;
+      list-style: none;
+      align-items: center;
+    }
+    .nav-links a {
+      font-size: 12px;
+      font-weight: 400;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      position: relative;
+      padding-bottom: 2px;
+      transition: color .2s;
+    }
+    /* Animated underline on nav links */
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: -2px; left: 0;
+      width: 0; height: 1.5px;
+      background: var(--accent);
+      transition: width .3s ease;
+      border-radius: 1px;
+    }
+    .nav-links a:hover,
+    .nav-links a.active { color: var(--accent); }
+    .nav-links a:hover::after,
+    .nav-links a.active::after { width: 100%; }
+
+    /* Resume button in the nav (rounded outline style) */
+    .nav-resume-btn {
+      font-size: 11px !important;
+      font-weight: 500 !important;
+      color: var(--accent) !important;
+      border: 1.5px solid var(--accent);
+      padding: 7px 20px !important;
+      border-radius: 99px;
+      letter-spacing: .1em !important;
+      transition: background .2s, color .2s !important;
+    }
+    .nav-resume-btn:hover { background: var(--accent); color: #fff !important; }
+    .nav-resume-btn::after { display: none !important; }
+
+    /* Hamburger icon — visible only on mobile */
+    .nav-hamburger {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      cursor: pointer;
+      padding: 4px;
+    }
+    .nav-hamburger span { display: block; width: 24px; height: 1.5px; background: var(--text); transition: .3s; }
+
+    /* ============================================================
+       BUTTONS — Two main styles used throughout
+    ============================================================ */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--sans);
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      padding: 13px 26px;
+      border-radius: 99px;
+      cursor: pointer;
+      transition: transform .2s, box-shadow .2s, background .2s, color .2s, border-color .2s;
+      border: 1.5px solid transparent;
+    }
+    .btn:hover { transform: translateY(-2px); }
+
+    .btn-solid {
+      background: var(--accent);
+      color: #fff;
+      box-shadow: 0 4px 16px rgba(0,86,152,.22);
+    }
+    .btn-solid:hover { background: var(--accent-dark); box-shadow: 0 8px 28px rgba(0,86,152,.32); }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--text);
+      border-color: var(--border);
+    }
+    .btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
+
+    .btn-outline-blue {
+      background: transparent;
+      color: var(--accent);
+      border-color: var(--accent);
+    }
+    .btn-outline-blue:hover { background: var(--accent); color: #fff; }
+
+    /* ============================================================
+       SECTION SHELL — Shared padding for all main sections
+    ============================================================ */
+    .section { padding: 112px 0; position: relative; }
+    section[id] { scroll-margin-top: calc(var(--nav-h) + 16px); }
+
+    .section-header {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 40px;
+      margin-bottom: 72px;
+    }
+    .section-title {
+      font-family: var(--serif);
+      font-size: clamp(36px, 4vw, 58px);
+      font-weight: 300;
+      line-height: 1.08;
+      letter-spacing: -.01em;
+    }
+    .section-title em { font-style: italic; color: var(--accent); }
+    .section-desc {
+      max-width: 340px;
+      font-size: 14px;
+      color: var(--muted);
+      line-height: 1.8;
+      text-align: right;
+      padding-bottom: 6px;
+    }
+
+    /* ============================================================
+       SECTION 1 — HERO / LANDING
+    ============================================================ */
+    #landing {
+      min-height: 100vh;
+      padding-top: var(--nav-h);
+      display: flex;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Decorative gradient blobs behind the hero */
+    #landing::before {
+      content: '';
+      position: absolute;
+      top: -180px; right: -180px;
+      width: 680px; height: 680px;
+      background: radial-gradient(circle, rgba(0,86,152,.07) 0%, transparent 65%);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+    #landing::after {
+      content: '';
+      position: absolute;
+      bottom: -120px; left: -120px;
+      width: 480px; height: 480px;
+      background: radial-gradient(circle, rgba(0,86,152,.05) 0%, transparent 65%);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+
+    .landing-grid {
+      display: grid;
+      grid-template-columns: 1fr 400px;
+      gap: 80px;
+      align-items: center;
+      width: 100%;
+      padding: 80px 0 96px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .landing-name {
+      font-family: var(--serif);
+      font-size: clamp(58px, 6.5vw, 94px);
+      font-weight: 300;
+      line-height: 1.02;
+      letter-spacing: -.02em;
+      margin-bottom: 28px;
+    }
+    .landing-name em { font-style: italic; color: var(--accent); }
+
+    .landing-bio {
+      font-size: 17px;
+      color: var(--muted);
+      line-height: 1.85;
+      max-width: 540px;
+      margin-bottom: 40px;
+    }
+
+    .landing-cta { display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 52px; }
+
+    /* Quick section-jump links at the bottom of the hero */
+    .landing-quick-links {
+      display: flex;
+      flex-wrap: wrap;
+      border-top: 1px solid var(--border);
+      padding-top: 28px;
+    }
+    .quick-link {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      padding: 8px 24px 8px 0;
+      margin-right: 24px;
+      border-right: 1px solid var(--border);
+      transition: color .2s;
+    }
+    .quick-link:last-child { border-right: none; margin-right: 0; }
+    .quick-link:hover { color: var(--accent); }
+    .ql-arrow { font-size: 11px; opacity: .5; transition: transform .2s, opacity .2s; }
+    .quick-link:hover .ql-arrow { transform: translate(3px,-3px); opacity: 1; }
+
+    /* Photo frame with decorative offset border */
+    .photo-frame { position: relative; }
+    .photo-frame::before {
+      content: '';
+      position: absolute;
+      top: 22px; left: 22px; right: -22px; bottom: -22px;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      z-index: 0;
+    }
+    .photo-frame img,
+    .photo-placeholder {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      aspect-ratio: 3/4;
+      border-radius: var(--radius);
+    }
+    .photo-frame img { object-fit: cover; }
+    .photo-placeholder {
+      background: var(--bg-subtle);
+      border: 1.5px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    /* Small badge that floats over the photo */
+    .photo-badge {
+      position: absolute;
+      z-index: 2;
+      bottom: -12px;
+      left: -12px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 14px 18px;
+      box-shadow: var(--shadow);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 190px;
+    }
+    .photo-badge-icon {
+      width: 36px; height: 36px;
+      background: var(--accent-lt);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px;
+      flex-shrink: 0;
+    }
+    .photo-badge-text strong { display: block; font-size: 13px; font-weight: 500; }
+    .photo-badge-text span { color: var(--muted); font-size: 11px; }
+
+    /* ============================================================
+       SECTION 2 — ABOUT ME
+    ============================================================ */
+    .about-strip { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+
+    .about-tile {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 36px;
+      transition: box-shadow .3s, transform .3s, border-color .3s;
+      position: relative;
+      overflow: hidden;
+    }
+    /* Animated blue top bar on hover */
+    .about-tile::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; height: 3px;
+      background: linear-gradient(90deg, var(--accent), #4da6ff);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform .35s ease;
+      border-radius: var(--radius) var(--radius) 0 0;
+    }
+    .about-tile:hover::after { transform: scaleX(1); }
+    .about-tile:hover { box-shadow: var(--shadow-hover); transform: translateY(-5px); border-color: transparent; }
+
+    .tile-icon {
+      width: 48px; height: 48px;
+      background: var(--accent-lt);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 22px;
+    }
+    .tile-icon svg { color: var(--accent); }
+    .about-tile h3 { font-family: var(--serif); font-size: 24px; font-weight: 400; margin-bottom: 10px; }
+    .about-tile p { font-size: 13px; color: var(--muted); line-height: 1.8; margin-bottom: 22px; }
+    .tile-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+
+    /* ============================================================
+       SECTION 3 — CAREER TIMELINE
+    ============================================================ */
+    .timeline { display: flex; flex-direction: column; }
+
+    .timeline-item {
+      display: grid;
+      grid-template-columns: 260px 1fr;
+      gap: 48px;
+      padding: 48px 0;
+      border-bottom: 1px solid var(--border);
+      transition: background .2s;
+    }
+    .timeline-item:first-child { border-top: 1px solid var(--border); }
+
+    .timeline-left { padding-top: 4px; }
+
+    /* Company logo square */
+    .timeline-logo {
+      width: 56px; height: 56px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      background: var(--bg-card);
+      display: flex; align-items: center; justify-content: center;
+      overflow: hidden;
+      margin-bottom: 16px;
+    }
+    .timeline-logo img { width: 100%; height: 100%; object-fit: contain; padding: 8px; }
+    .timeline-logo-fallback { font-family: var(--serif); font-size: 18px; font-weight: 600; color: var(--accent); }
+
+    .timeline-date { font-size: 13px; color: var(--muted); margin-bottom: 8px; }
+    .timeline-badge {
+      display: inline-block;
+      font-size: 10px; font-weight: 500; letter-spacing: .14em; text-transform: uppercase;
+      color: var(--accent); background: var(--accent-lt);
+      padding: 4px 10px; border-radius: 99px;
+    }
+
+    .timeline-title { font-family: var(--serif); font-size: 27px; font-weight: 400; margin-bottom: 4px; line-height: 1.2; }
+    .timeline-org { font-size: 14px; color: var(--muted); font-style: italic; margin-bottom: 20px; }
+
+    .timeline-bullets { list-style: none; display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; }
+    .timeline-bullets li { font-size: 14px; color: var(--muted); line-height: 1.75; display: flex; gap: 12px; }
+    .timeline-bullets li::before {
+      content: '';
+      display: block; width: 6px; height: 6px; border-radius: 50%;
+      background: var(--accent); flex-shrink: 0; margin-top: 9px;
+    }
+
+    .timeline-tags { display: flex; gap: 8px; flex-wrap: wrap; }
+
+    /* Education row — title in accent color */
+    .timeline-item.education .timeline-title { color: var(--accent); }
+
+    /* ============================================================
+       SECTION 4 — PROJECTS
+    ============================================================ */
+    .projects-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; }
+
+    .project-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 36px;
+      display: flex; flex-direction: column; gap: 16px;
+      transition: box-shadow .3s, transform .3s, border-color .3s;
+      position: relative; overflow: hidden;
+    }
+    .project-card:hover { box-shadow: var(--shadow-hover); transform: translateY(-5px); border-color: rgba(0,86,152,.2); }
+
+    /* Large faint number in the background */
+    .project-num {
+      position: absolute; top: 16px; right: 20px;
+      font-family: var(--serif); font-size: 76px; font-weight: 300;
+      color: var(--border); line-height: 1; pointer-events: none;
+      transition: color .3s;
+    }
+    .project-card:hover .project-num { color: var(--accent-lt); }
+
+    .project-card h3 { font-family: var(--serif); font-size: 24px; font-weight: 400; line-height: 1.25; }
+    .project-card p { font-size: 13px; color: var(--muted); line-height: 1.85; flex: 1; }
+
+    .project-highlights { list-style: none; display: flex; flex-direction: column; gap: 9px; }
+    .project-highlights li { font-size: 13px; color: var(--muted); line-height: 1.7; display: flex; gap: 10px; }
+    .project-highlights li::before { content: '→'; color: var(--accent); flex-shrink: 0; font-size: 11px; margin-top: 2px; }
+
+    .project-footer {
+      display: flex; align-items: center; justify-content: space-between;
+      padding-top: 16px; border-top: 1px solid var(--border); flex-wrap: wrap; gap: 10px;
+    }
+    .project-meta { font-size: 12px; color: var(--muted); }
+    .grade-pill {
+      font-size: 11px; font-weight: 600; letter-spacing: .05em;
+      color: var(--accent); background: var(--accent-lt);
+      padding: 5px 12px; border-radius: 99px;
+    }
+
+    /* Full-width featured project card */
+    .project-card.featured {
+      grid-column: span 2;
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 48px; align-items: start;
+    }
+    .project-card.featured .project-num { font-size: 110px; top: 20px; right: 28px; }
+    .project-card.featured .project-body { display: flex; flex-direction: column; gap: 16px; }
+
+    /* Green pulsing "ongoing" badge */
+    .ongoing-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 10px; font-weight: 500; letter-spacing: .12em; text-transform: uppercase;
+      color: #16a34a; background: #dcfce7; padding: 4px 10px; border-radius: 99px;
+    }
+    .pulse-dot {
+      width: 6px; height: 6px; border-radius: 50%; background: #16a34a;
+      animation: pulse-anim 2s infinite;
+    }
+    @keyframes pulse-anim {
+      0%,100% { opacity: 1; transform: scale(1); }
+      50%      { opacity: .5; transform: scale(.75); }
+    }
+
+    /* ============================================================
+       SECTION 5 — CERTIFICATIONS & SKILLS
+    ============================================================ */
+    .certs-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; }
+
+    .certs-col-title {
+      font-family: var(--serif); font-size: 22px; font-weight: 400;
+      margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid var(--border);
+    }
+
+    .cert-item {
+      display: flex; align-items: flex-start; gap: 18px;
+      padding: 20px; border: 1px solid var(--border); border-radius: var(--radius-sm);
+      background: var(--bg-card); margin-bottom: 14px;
+      transition: border-color .3s, box-shadow .3s, transform .3s;
+    }
+    .cert-item:hover { border-color: rgba(0,86,152,.25); box-shadow: var(--shadow); transform: translateX(5px); }
+
+    .cert-icon {
+      width: 44px; height: 44px; background: var(--accent-lt); border-radius: 50%;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 18px;
+    }
+    .cert-info h4 { font-family: var(--serif); font-size: 18px; font-weight: 400; margin-bottom: 3px; }
+    .cert-info p { font-size: 12px; color: var(--muted); line-height: 1.65; }
+
+    /* Skills section */
+    .skills-category { margin-bottom: 26px; }
+    .skills-cat-label {
+      font-size: 10px; font-weight: 500; letter-spacing: .2em; text-transform: uppercase;
+      color: var(--muted); margin-bottom: 12px; display: block;
+    }
+    .skills-pills { display: flex; flex-wrap: wrap; gap: 8px; }
+
+    .skill-pill {
+      font-size: 12px; font-weight: 400;
+      padding: 7px 16px; border-radius: 99px;
+      border: 1px solid var(--border); background: var(--bg-card); color: var(--text);
+      transition: background .2s, border-color .2s, color .2s, transform .2s;
+      cursor: default;
+    }
+    .skill-pill:hover { background: var(--accent-lt); border-color: var(--accent); color: var(--accent); transform: translateY(-2px); }
+
+    /* Blue-filled = advanced proficiency */
+    .skill-pill.advanced { background: var(--accent-lt); border-color: transparent; color: var(--accent); font-weight: 500; }
+
+    /* ============================================================
+       SECTION 6 — EXTRA-CURRICULARS
+    ============================================================ */
+    .ec-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+
+    .ec-card {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 32px;
+      transition: box-shadow .3s, transform .3s, border-color .3s;
+      position: relative; overflow: hidden;
+    }
+    .ec-card:hover { box-shadow: var(--shadow-hover); transform: translateY(-5px); border-color: rgba(0,86,152,.2); }
+    /* Animated blue bottom bar */
+    .ec-card::before {
+      content: '';
+      position: absolute; bottom: 0; left: 0; right: 0; height: 3px;
+      background: linear-gradient(90deg, var(--accent), #4da6ff);
+      transform: scaleX(0); transform-origin: left; transition: transform .35s ease;
+    }
+    .ec-card:hover::before { transform: scaleX(1); }
+
+    .ec-emoji { font-size: 28px; margin-bottom: 16px; display: block; }
+    .ec-card h3 { font-family: var(--serif); font-size: 20px; font-weight: 400; margin-bottom: 8px; line-height: 1.3; }
+    .ec-role { font-size: 10px; font-weight: 500; letter-spacing: .14em; text-transform: uppercase; color: var(--accent); margin-bottom: 14px; display: block; }
+    .ec-card p { font-size: 13px; color: var(--muted); line-height: 1.8; }
+    .ec-stat {
+      margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--border);
+      display: flex; align-items: baseline; gap: 8px;
+    }
+    .ec-stat-num { font-family: var(--serif); font-size: 26px; font-weight: 300; color: var(--accent); }
+    .ec-stat-label { font-size: 11px; color: var(--muted); }
+
+    /* ============================================================
+       FOOTER
+    ============================================================ */
+    footer { border-top: 1px solid var(--border); padding: 56px 0; background: var(--bg); }
+    .footer-inner { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 24px; }
+    .footer-name { font-family: var(--serif); font-size: 26px; font-weight: 300; }
+    .footer-name em { font-style: italic; color: var(--accent); }
+    .footer-links { display: flex; gap: 28px; }
+    .footer-links a { font-size: 12px; color: var(--muted); letter-spacing: .06em; transition: color .2s; }
+    .footer-links a:hover { color: var(--accent); }
+    .footer-copy { font-size: 12px; color: var(--muted); }
+
+    /* ============================================================
+       MOBILE NAV DROPDOWN
+    ============================================================ */
+    .mobile-nav {
+      display: none; position: fixed;
+      top: var(--nav-h); left: 0; right: 0;
+      background: rgba(250,248,244,.97); backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border); z-index: 99;
+      padding: 24px 32px; flex-direction: column; gap: 4px;
+    }
+    .mobile-nav.open { display: flex; }
+    .mobile-nav a { font-size: 14px; color: var(--text); padding: 10px 0; border-bottom: 1px solid var(--border); transition: color .2s; }
+    .mobile-nav a:hover { color: var(--accent); }
+
+    /* ============================================================
+       RESPONSIVE BREAKPOINTS
+    ============================================================ */
+    @media (max-width: 1000px) {
+      .container { padding: 0 28px; }
+      .landing-grid { grid-template-columns: 1fr; gap: 56px; }
+      .photo-frame { max-width: 300px; }
+      .about-strip { grid-template-columns: 1fr; }
+      .timeline-item { grid-template-columns: 1fr; gap: 16px; }
+      .projects-grid { grid-template-columns: 1fr; }
+      .project-card.featured { grid-column: span 1; grid-template-columns: 1fr; }
+      .certs-layout { grid-template-columns: 1fr; }
+      .ec-grid { grid-template-columns: 1fr 1fr; }
+      .section-header { flex-direction: column; align-items: flex-start; }
+      .section-desc { text-align: left; }
+      .nav-links { display: none; }
+      .nav-hamburger { display: flex; }
+    }
+    @media (max-width: 600px) {
+      .container { padding: 0 20px; }
+      .ec-grid { grid-template-columns: 1fr; }
+      .landing-cta { flex-direction: column; align-items: flex-start; }
+      .section { padding: 72px 0; }
+      .section-header { margin-bottom: 48px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ── SCROLL PROGRESS BAR (top of page) ── -->
+  <div id="progress-bar"></div>
+
+  <!-- ============================================================
+       NAVIGATION
+       EDIT: Change name and href links if you rename any sections.
+  ============================================================ -->
+  <nav id="main-nav">
+    <div class="nav-inner">
+      <a href="#landing" class="nav-logo">Chanakya Naidu</a>
+
+      <ul class="nav-links">
+        <li><a href="#about">About</a></li>
+        <li><a href="#experience">Experience</a></li>
+        <li><a href="#projects">Projects</a></li>
+        <li><a href="#certifications">Expertise</a></li>
+        <li><a href="#extracurriculars">Activities</a></li>
+        <li><a href="assets/resume.pdf" target="_blank" class="nav-resume-btn">Resume</a></li>
+      </ul>
+
+      <div class="nav-hamburger" id="hamburger">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Mobile dropdown menu -->
+  <div class="mobile-nav" id="mobile-nav">
+    <a href="#about"            onclick="closeMobileNav()">About</a>
+    <a href="#experience"       onclick="closeMobileNav()">Experience</a>
+    <a href="#projects"         onclick="closeMobileNav()">Projects</a>
+    <a href="#certifications"   onclick="closeMobileNav()">Expertise</a>
+    <a href="#extracurriculars" onclick="closeMobileNav()">Activities</a>
+    <a href="assets/resume.pdf" target="_blank">View Resume ↗</a>
+  </div>
+
+
+  <!-- ============================================================
+       SECTION 1 — LANDING / HERO
+       EDIT: Name, bio paragraph, your university details.
+  ============================================================ -->
+  <section id="landing">
+    <div class="container">
+      <div class="landing-grid">
+
+        <!-- LEFT: Text content -->
+        <div>
+          <span class="eyebrow reveal">BBA · Mahindra University · Class of 2026</span>
+
+          <!-- EDIT: Your name -->
+          <h1 class="landing-name reveal reveal-d1">
+            Chanakya<br><em>Naidu</em>
+          </h1>
+
+          <!-- EDIT: Your one-paragraph bio -->
+          <p class="landing-bio reveal reveal-d2">
+            Business strategist, management consultant, and institution builder. 
+            From Goldman Sachs to founding Mahindra University's first consulting club, 
+            I work at the intersection of strategy, analytics, and design — driven by 
+            the belief that the best ideas deserve the best execution.
+          </p>
+
+          <div class="landing-cta reveal reveal-d3">
+            <!-- Opens resume in a new tab -->
+            <a href="assets/resume.pdf" target="_blank" class="btn btn-solid">
+              <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              View Resume
+            </a>
+            <!-- Downloads the resume file -->
+            <a href="assets/resume.pdf" download class="btn btn-ghost">
+              <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+              Download Resume
+            </a>
+            <a href="https://linkedin.com/in/chanakya-naidu" target="_blank" class="btn btn-outline-blue">
+              LinkedIn ↗
+            </a>
+          </div>
+
+          <!-- Quick-jump links to each section -->
+          <div class="landing-quick-links reveal reveal-d4">
+            <a href="#about"            class="quick-link">About <span class="ql-arrow">↗</span></a>
+            <a href="#experience"       class="quick-link">Experience <span class="ql-arrow">↗</span></a>
+            <a href="#projects"         class="quick-link">Projects <span class="ql-arrow">↗</span></a>
+            <a href="#certifications"   class="quick-link">Expertise <span class="ql-arrow">↗</span></a>
+            <a href="#extracurriculars" class="quick-link">Activities <span class="ql-arrow">↗</span></a>
+          </div>
+        </div>
+
+        <!-- RIGHT: Photo -->
+        <div class="photo-frame reveal reveal-d2">
+          <!--
+            HOW TO ADD YOUR PHOTO:
+            1. Save your photo as "photo.jpg" in the "assets" folder
+            2. Delete the entire <div class="photo-placeholder"> block below
+            3. Uncomment the img tag (remove the HTML comment marks):
+               <img src="assets/photo.jpg" alt="Chanakya Naidu" />
+          -->
+          <!-- <img src="assets/photo.jpg" alt="Chanakya Naidu" /> -->
+          <div class="photo-placeholder">
+            <svg width="40" height="40" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1" opacity=".35">
+              <circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
+            </svg>
+            Add photo.jpg to assets/
+          </div>
+
+          <!-- Floating GPA badge -->
+          <div class="photo-badge">
+            <div class="photo-badge-icon">🎓</div>
+            <div class="photo-badge-text">
+              <strong>GPA 9.3 / 10</strong>
+              <span>Mahindra University</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+  <hr class="section-divider" />
+
+
+  <!-- ============================================================
+       SECTION 2 — ABOUT ME
+       Resume view/download, video intro, LinkedIn tile
+  ============================================================ -->
+  <section id="about" class="section">
+    <div class="container">
+      <div class="section-header reveal">
+        <div>
+          <span class="eyebrow">02 — About Me</span>
+          <h2 class="section-title">Get to <em>Know</em> Me</h2>
+        </div>
+        <p class="section-desc">My resume, a short video introduction, and a direct link to my professional profile.</p>
+      </div>
+
+      <div class="about-strip">
+
+        <!-- Tile 1: Resume -->
+        <div class="about-tile reveal">
+          <div class="tile-icon">
+            <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+              <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414A1 1 0 0121 9.414V19a2 2 0 01-2 2z"/>
+            </svg>
+          </div>
+          <h3>Resume</h3>
+          <p>My full resume covering academic credentials, Goldman Sachs experience, live consulting projects, technical skills, and leadership.</p>
+          <div class="tile-actions">
+            <a href="assets/resume.pdf" target="_blank" class="btn btn-solid" style="font-size:11px;padding:10px 20px;">
+              <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              View
+            </a>
+            <a href="assets/resume.pdf" download class="btn btn-ghost" style="font-size:11px;padding:10px 20px;">
+              <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+              Download
+            </a>
+          </div>
+        </div>
+
+        <!-- Tile 2: Video intro -->
+        <div class="about-tile reveal reveal-d1">
+          <div class="tile-icon">
+            <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+              <path d="M15 10l4.553-2.069A1 1 0 0121 8.82v6.36a1 1 0 01-1.447.89L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+            </svg>
+          </div>
+          <h3>Video Introduction</h3>
+          <p>A short 2-minute introduction — who I am, what drives me, and what I hope to build.</p>
+          <!--
+            HOW TO ADD VIDEO:
+            1. Upload your video to YouTube (can be "Unlisted" — no one sees it unless they have the link)
+            2. On YouTube: Share → Embed → copy only the ID after "youtube.com/embed/"
+            3. Replace YOUR_VIDEO_ID below with that ID
+            4. Delete the placeholder div and uncomment the iframe line
+          -->
+          <div style="aspect-ratio:16/9;background:var(--bg-subtle);border-radius:var(--radius-sm);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:13px;gap:10px;margin-top:auto;">
+            <svg width="28" height="28" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1" opacity=".45"><path d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/><path d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            Paste your YouTube embed here
+          </div>
+          <!-- <iframe src="https://www.youtube.com/embed/YOUR_VIDEO_ID" allowfullscreen style="width:100%;aspect-ratio:16/9;border-radius:var(--radius-sm);border:none;display:block;margin-top:8px;"></iframe> -->
+        </div>
+
+        <!-- Tile 3: LinkedIn -->
+        <div class="about-tile reveal reveal-d2">
+          <div class="tile-icon">
+            <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+              <path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-4 0v7h-4v-7a6 6 0 016-6zM2 9h4v12H2z"/><circle cx="4" cy="4" r="2"/>
+            </svg>
+          </div>
+          <h3>LinkedIn</h3>
+          <p>Connect with me professionally — see endorsements, recommendations, and my full career presence.</p>
+          <div class="tile-actions">
+            <a href="https://linkedin.com/in/chanakya-naidu" target="_blank" class="btn btn-solid" style="font-size:11px;padding:10px 20px;">
+              View Profile ↗
+            </a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+  <hr class="section-divider" />
+
+
+  <!-- ============================================================
+       SECTION 3 — CAREER TIMELINE
+       EDIT: Each .timeline-item is one role. Copy/paste to add more.
+       LOGOS: Save as gs-logo.png, mcg-logo.png, roots-logo.png,
+              pinnacle-logo.png in the assets/ folder.
+              If the image file is missing, initials show instead.
+  ============================================================ -->
+  <section id="experience" class="section">
+    <div class="container">
+      <div class="section-header reveal">
+        <div>
+          <span class="eyebrow">03 — Experience</span>
+          <h2 class="section-title">Where I've <em>Worked</em></h2>
+        </div>
+        <p class="section-desc">Internships, leadership roles, and institutional initiatives that shaped how I think and operate.</p>
+      </div>
+
+      <div class="timeline">
+
+        <!-- ── Goldman Sachs ── -->
+        <div class="timeline-item reveal">
+          <div class="timeline-left">
+            <!--
+              Logo: save your Goldman Sachs logo as "gs-logo.png" in assets/
+              The onerror attribute hides the image and shows initials if the file is missing.
+            -->
+            <div class="timeline-logo">
+              <img src="assets/gs-logo.png" alt="Goldman Sachs"
+                onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" />
+              <span class="timeline-logo-fallback" style="display:none;">GS</span>
+            </div>
+            <p class="timeline-date">Jun '25 – Aug '25</p>
+            <span class="timeline-badge">Internship</span>
+          </div>
+          <div class="timeline-right">
+            <h3 class="timeline-title">Summer Analyst</h3>
+            <p class="timeline-org">Goldman Sachs · Bengaluru, India</p>
+            <ul class="timeline-bullets">
+              <li>Managed non-financial regulatory reporting covering risk and compliance across Asia (excl. Japan) and EMEA.</li>
+              <li>Led a global tech migration project across 100+ users and 6+ international teams, ensuring seamless system integration.</li>
+              <li>Delivered strategic documentation and cross-department alignment for data migration protocols.</li>
+              <li>Gained firsthand exposure to investment banking operations, business analytics, and enterprise-scale digital project management.</li>
+            </ul>
+            <div class="timeline-tags">
+              <span class="tag">Regulatory Reporting</span>
+              <span class="tag">Tech Migration</span>
+              <span class="tag">Business Analytics</span>
+              <span class="tag">IB Operations</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── MUMCG — Founder & Consulting Director ── -->
+        <div class="timeline-item reveal">
+          <div class="timeline-left">
+            <div class="timeline-logo">
+              <img src="assets/mcg-logo.png" alt="MUMCG"
+                onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" />
+              <span class="timeline-logo-fallback" style="display:none;">MCG</span>
+            </div>
+            <p class="timeline-date">Nov '24 – Present</p>
+            <span class="timeline-badge">Founder · Leadership</span>
+          </div>
+          <div class="timeline-right">
+            <h3 class="timeline-title">Founder & Consulting Director</h3>
+            <p class="timeline-org">Mahindra University Management Consulting Group (MUMCG)</p>
+            <ul class="timeline-bullets">
+              <li>Founded the university's first consulting club; grew from Vice President (Nov '24) to Consulting Director (Oct '25–present).</li>
+              <li>Manages a cross-functional team of 120+ consultants; built client acquisition pipelines and oversaw live advisory projects for firms, startups, and NGOs.</li>
+              <li>Delivers expertise in Market Research, Digital Transformation, Marketing & Branding, STP, and HR.</li>
+              <li>Designed networking events, SME seminars, and case competitions — engaging 200+ participants across disciplines.</li>
+              <li>Structured MUMCG's service delivery model and internal knowledge repository for quality and scalability.</li>
+            </ul>
+            <div class="timeline-tags">
+              <span class="tag">Strategy Consulting</span>
+              <span class="tag">Team of 120+</span>
+              <span class="tag">Client Acquisition</span>
+              <span class="tag">Institutional Building</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── ROOTS Festival ── -->
+        <div class="timeline-item reveal">
+          <div class="timeline-left">
+            <div class="timeline-logo">
+              <img src="assets/roots-logo.png" alt="ROOTS Festival"
+                onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" />
+              <span class="timeline-logo-fallback" style="display:none;">🌿</span>
+            </div>
+            <p class="timeline-date">Jun '25 – Nov '25</p>
+            <span class="timeline-badge">Production</span>
+          </div>
+          <div class="timeline-right">
+            <h3 class="timeline-title">Head of Programming & Marketing</h3>
+            <p class="timeline-org">ROOTS Festival · Mahindra & Mahindra Group / Mahindra University</p>
+            <ul class="timeline-bullets">
+              <li>Led campus-wide marketing for the inaugural edition of the Mahindra & Mahindra Group's ROOTS Festival.</li>
+              <li>Created, organised, and executed end-to-end events across four days spanning internal and external artists and acts.</li>
+              <li>Owned finance, event logistics, procurement, vendor contacts, security, and sponsorship-based financing from first contact to final execution.</li>
+            </ul>
+            <div class="timeline-tags">
+              <span class="tag">Event Production</span>
+              <span class="tag">Financial Modelling</span>
+              <span class="tag">Sponsorship</span>
+              <span class="tag">Vendor Management</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── Pinnacle Perspectives ── -->
+        <div class="timeline-item reveal">
+          <div class="timeline-left">
+            <div class="timeline-logo">
+              <img src="assets/pinnacle-logo.png" alt="Pinnacle Perspectives"
+                onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" />
+              <span class="timeline-logo-fallback" style="display:none;">PP</span>
+            </div>
+            <p class="timeline-date">Aug '25 – Present</p>
+            <span class="timeline-badge">Leadership</span>
+          </div>
+          <div class="timeline-right">
+            <h3 class="timeline-title">Lead Organiser</h3>
+            <p class="timeline-org">Pinnacle Perspectives · Mahindra University Monthly Speaker Seminar</p>
+            <ul class="timeline-bullets">
+              <li>Manages end-to-end curation of Mahindra University's monthly speaker seminar — hosting national and global leaders including Arindam Banerjee (Asia Head, State Street), Muralikrishnan B (Ex-President, Xiaomi India), and Anjali Merchant (Epigamia).</li>
+              <li>Leads event strategy, speaker engagement, and audience development — attracting 500+ unique attendees university-wide.</li>
+              <li>Collaborates with administration and external partners to institutionalise the series as a flagship recurring event.</li>
+            </ul>
+            <div class="timeline-tags">
+              <span class="tag">Speaker Curation</span>
+              <span class="tag">500+ Attendees</span>
+              <span class="tag">Event Strategy</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── The Echo ── -->
+        <div class="timeline-item reveal">
+          <div class="timeline-left">
+            <div class="timeline-logo" style="background:var(--bg-subtle);">
+              <span class="timeline-logo-fallback">📰</span>
+            </div>
+            <p class="timeline-date">Sep '24 – Aug '25</p>
+            <span class="timeline-badge">Editorial</span>
+          </div>
+          <div class="timeline-right">
+            <h3 class="timeline-title">Opinion Forum Editor</h3>
+            <p class="timeline-org">The Echo · Mahindra University Newspaper</p>
+            <ul class="timeline-bullets">
+              <li>Edited and authored multiple published articles for the university's official newspaper across opinion, commentary, and analysis formats.</li>
+              <li>Shaped the editorial direction of the Opinion Forum — curating student voices on business, policy, and campus affairs.</li>
+            </ul>
+            <div class="timeline-tags">
+              <span class="tag">Editorial</span>
+              <span class="tag">Opinion Writing</span>
+              <span class="tag">Content Strategy</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── Education ── -->
+        <div class="timeline-item education reveal">
+          <div class="timeline-left">
+            <div class="timeline-logo" style="background:var(--accent-lt);">
+              <span class="timeline-logo-fallback" style="font-size:20px;">🎓</span>
+            </div>
+            <p class="timeline-date">Aug '23 – Jun '26</p>
+            <span class="timeline-badge">Education</span>
+          </div>
+          <div class="timeline-right">
+            <h3 class="timeline-title">Bachelor of Business Administration</h3>
+            <p class="timeline-org">Mahindra University · Hyderabad, India</p>
+            <ul class="timeline-bullets">
+              <li>Current GPA: <strong>9.3 / 10</strong> as of Semester 5 — consistently among top-performing students in the program.</li>
+              <li>Coursework spans Financial Markets, Management Consulting, Digital Marketing, Data Analytics, UI/UX Design, ERM, and Strategy.</li>
+              <li>Achieved <strong>Top 3 percentile globally</strong> in the Marketplace Simulations entrepreneurship simulation.</li>
+            </ul>
+            <div class="timeline-tags">
+              <span class="tag">GPA 9.3 / 10</span>
+              <span class="tag">Top 3% Worldwide</span>
+              <span class="tag">Finance · Strategy · Analytics</span>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /timeline -->
+    </div>
+  </section>
+  <hr class="section-divider" />
+
+
+  <!-- ============================================================
+       SECTION 4 — PROJECTS & RESEARCH
+       EDIT: Each .project-card is one project. The "featured" card
+       spans full width — keep this for your most important project.
+  ============================================================ -->
+  <section id="projects" class="section">
+    <div class="container">
+      <div class="section-header reveal">
+        <div>
+          <span class="eyebrow">04 — Projects & Research</span>
+          <h2 class="section-title">Work I'm <em>Proud Of</em></h2>
+        </div>
+        <p class="section-desc">Live consulting engagements, independent research, and applied projects across strategy, marketing, and analytics.</p>
+      </div>
+
+      <div class="projects-grid">
+
+        <!-- ── Capstone: Hyderabad Metro (featured, full-width) ── -->
+        <div class="project-card featured reveal">
+          <div>
+            <span class="project-num">01</span>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;">
+              <span class="tag tag-blue">Capstone Project</span>
+              <span class="ongoing-badge"><span class="pulse-dot"></span>Ongoing</span>
+            </div>
+            <h3 style="font-family:var(--serif);font-size:30px;font-weight:300;line-height:1.2;">
+              General Accessibility Review<br>of the Hyderabad Metro System
+            </h3>
+          </div>
+          <div class="project-body">
+            <p>Conducting an end-to-end accessibility audit of Hyderabad's metro infrastructure — evaluating physical, sensory, and informational barriers faced by persons with disabilities and the elderly. The project synthesises field observations, stakeholder interviews, and policy benchmarking to deliver actionable recommendations for HMRL.</p>
+            <ul class="project-highlights">
+              <li>Ongoing field-based qualitative and quantitative data collection across metro stations</li>
+              <li>Benchmarking against international accessibility standards (ADA, UNCRPD)</li>
+              <li>Developing a stakeholder-ready policy recommendation framework</li>
+            </ul>
+            <div class="project-footer">
+              <span class="project-meta">Mahindra University · 2025–26 · Faculty supervised</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── SAP India ── -->
+        <div class="project-card reveal">
+          <span class="project-num">02</span>
+          <div><span class="tag tag-blue">Strategy Consulting · 2025</span></div>
+          <h3>SAP India — Cloud ERP Strategy</h3>
+          <ul class="project-highlights">
+            <li>Analysed continuous viability of SAP India's cloud-based ERP suite for long-term strategic planning.</li>
+            <li>Conducted ground-level primary data collection on SAP's clients and pipeline leads.</li>
+            <li>Delivered comprehensive management recommendations on sustaining value propositions for SAP's Cloud Solutions Suite.</li>
+          </ul>
+          <div class="project-footer">
+            <span class="project-meta">Advisory · via MUMCG · 2025</span>
+          </div>
+        </div>
+
+        <!-- ── Regalia by Reyney ── -->
+        <div class="project-card reveal reveal-d1">
+          <span class="project-num">03</span>
+          <div><span class="tag tag-blue">Digital Marketing · 2025</span></div>
+          <h3>Regalia by Reyney — Digital Growth</h3>
+          <ul class="project-highlights">
+            <li>Executed a full-scale SEO, SEM, and Google Ads campaign — improved lead conversion rate ~100% and website engagement ~263% within two months.</li>
+            <li>Redesigned the brand website (UI/UX + SEM + SEO) for optimised funnel performance and customer experience.</li>
+            <li>Increased ad revenue generation by ~130%.</li>
+          </ul>
+          <div class="project-footer">
+            <span class="project-meta">Digital Consulting · 2025</span>
+            <span class="grade-pill">+263% Engagement</span>
+          </div>
+        </div>
+
+        <!-- ── Industry 5.0 Research ── -->
+        <div class="project-card reveal">
+          <span class="project-num">04</span>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <span class="tag tag-blue">Research Paper</span>
+            <span class="ongoing-badge"><span class="pulse-dot"></span>Ongoing</span>
+          </div>
+          <h3>Industry 5.0 Readiness in Indian MSMEs</h3>
+          <ul class="project-highlights">
+            <li>Conducting a comprehensive study under Dr. Debopam Chakraborty assessing Indian MSMEs' readiness for Industry 5.0.</li>
+            <li>Synthesising qualitative and quantitative findings into a research paper highlighting policy and adoption gaps.</li>
+            <li>Building a framework matrix to assess Industry 5.0 readiness across MSME segments.</li>
+          </ul>
+          <div class="project-footer">
+            <span class="project-meta">With Dr. Debopam Chakraborty · MU</span>
+          </div>
+        </div>
+
+        <!-- ── OG & Co. ── -->
+        <div class="project-card reveal reveal-d1">
+          <span class="project-num">05</span>
+          <div><span class="tag tag-blue">Strategy Consulting · 2024</span></div>
+          <h3>OG & Co. — Premium Fashion Strategy</h3>
+          <ul class="project-highlights">
+            <li>Created market entry strategies for new geographies; refined target market and STP framework.</li>
+            <li>Delivered recommendations on backwards supply chain optimisation and sourcing efficiency.</li>
+            <li>Built a go-to-market framework combining storytelling-led brand communication and influencer activation for millennial luxury buyers.</li>
+          </ul>
+          <div class="project-footer">
+            <span class="project-meta">Advisory Strategy · 2024</span>
+            <a href="#" class="grade-pill" style="cursor:pointer;">View Summary ↗</a>
+          </div>
+        </div>
+
+        <!-- ── Sleep Research ── -->
+        <div class="project-card reveal">
+          <span class="project-num">06</span>
+          <div><span class="tag tag-blue">Research · Best in Cohort</span></div>
+          <h3>Sleep Deprivation & Academic Performance</h3>
+          <ul class="project-highlights">
+            <li>Led a study selected as best by faculty among ~400 students.</li>
+            <li>Designed survey instrument and performed multi-variable regression analysis on academic outcomes.</li>
+            <li>Presented behavioral insights and institutional recommendations to a faculty review panel.</li>
+          </ul>
+          <div class="project-footer">
+            <span class="project-meta">Research Techniques · MU</span>
+            <span class="grade-pill">🏆 Best in Cohort</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+  <hr class="section-divider" />
+
+
+  <!-- ============================================================
+       SECTION 5 — CERTIFICATIONS & SKILLS
+       EDIT: Add/remove .cert-item blocks; add/remove .skill-pill spans.
+       "advanced" class on a skill pill = filled blue (top skills).
+  ============================================================ -->
+  <section id="certifications" class="section">
+    <div class="container">
+      <div class="section-header reveal">
+        <div>
+          <span class="eyebrow">05 — Verified Expertise</span>
+          <h2 class="section-title">Skills & <em>Credentials</em></h2>
+        </div>
+        <p class="section-desc">External certifications, technical capabilities, and domain knowledge built through coursework and practice.</p>
+      </div>
+
+      <div class="certs-layout">
+
+        <!-- LEFT: Certifications -->
+        <div class="reveal">
+          <h3 class="certs-col-title">Certifications & Courses</h3>
+
+          <div class="cert-item">
+            <div class="cert-icon">🏛️</div>
+            <div class="cert-info">
+              <h4>Enterprise Risk Management — Level 1</h4>
+              <p>Institute of Risk Management (IRM) · 2024<br>Delivered a 100-point Risk Analysis Report for Airbus SE as live coursework.</p>
+            </div>
+          </div>
+
+          <div class="cert-item">
+            <div class="cert-icon">🌍</div>
+            <div class="cert-info">
+              <h4>UNCC Climate Change Certification</h4>
+              <p>United Nations CC · Oct 2023<br>Corporate, national, and international sustainability policy; integrating ESG into business strategy.</p>
+            </div>
+          </div>
+
+          <div class="cert-item">
+            <div class="cert-icon">📈</div>
+            <div class="cert-info">
+              <h4>Options Trading Workshop</h4>
+              <p>Dr. Sanjay Mansabdar · Mahindra University · 2025<br>In-depth study of options trading strategies, derivatives pricing, and real-world market applications.</p>
+            </div>
+          </div>
+
+          <div class="cert-item">
+            <div class="cert-icon">🎓</div>
+            <div class="cert-info">
+              <h4>Finance Workshop — M&A & Financial Theory</h4>
+              <p>Dr. Drew David Pascarella · SC Johnson College, Cornell University · 2024<br>Mergers & Acquisitions, financial modelling, and corporate finance theory.</p>
+            </div>
+          </div>
+
+          <div class="cert-item">
+            <div class="cert-icon">🌐</div>
+            <div class="cert-info">
+              <h4>Marketplace Simulations — Entrepreneurship</h4>
+              <p>Global Simulation · 2024 · <strong style="color:var(--accent);">Top 3 Percentile Worldwide</strong><br>Built and scaled a venture in a live global entrepreneurship simulation.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- RIGHT: Skills -->
+        <div class="reveal reveal-d1">
+          <h3 class="certs-col-title">Skills</h3>
+
+          <div class="skills-category">
+            <span class="skills-cat-label">Technical & Tools</span>
+            <div class="skills-pills">
+              <span class="skill-pill advanced">Advanced Excel</span>
+              <span class="skill-pill advanced">Power BI</span>
+              <span class="skill-pill advanced">Figma</span>
+              <span class="skill-pill advanced">Canva</span>
+              <span class="skill-pill advanced">SEO & SEM</span>
+              <span class="skill-pill advanced">Systems Thinking</span>
+              <span class="skill-pill">SQL</span>
+              <span class="skill-pill">Python</span>
+              <span class="skill-pill">Google Ads</span>
+              <span class="skill-pill">Adobe Illustrator</span>
+              <span class="skill-pill">Adobe Photoshop</span>
+              <span class="skill-pill">DaVinci Resolve Pro</span>
+              <span class="skill-pill">Full-Stack UI/UX</span>
+              <span class="skill-pill">Data Visualization</span>
+            </div>
+          </div>
+
+          <div class="skills-category">
+            <span class="skills-cat-label">Strategy & Business</span>
+            <div class="skills-pills">
+              <span class="skill-pill advanced">Strategy Consulting</span>
+              <span class="skill-pill advanced">Financial Modelling</span>
+              <span class="skill-pill advanced">Market Research</span>
+              <span class="skill-pill">Enterprise Risk Management</span>
+              <span class="skill-pill">STP & Brand Strategy</span>
+              <span class="skill-pill">Digital Marketing</span>
+              <span class="skill-pill">Statistical Analysis</span>
+              <span class="skill-pill">E-commerce</span>
+            </div>
+          </div>
+
+          <div class="skills-category">
+            <span class="skills-cat-label">Communication & Leadership</span>
+            <div class="skills-pills">
+              <span class="skill-pill advanced">Public Speaking</span>
+              <span class="skill-pill advanced">Project Management</span>
+              <span class="skill-pill">Content Writing</span>
+              <span class="skill-pill">Storytelling with Data</span>
+              <span class="skill-pill">Report Writing</span>
+              <span class="skill-pill">Corporate Communication</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+  <hr class="section-divider" />
+
+
+  <!-- ============================================================
+       SECTION 6 — EXTRA-CURRICULARS
+       EDIT: Each .ec-card is one activity. Add/remove freely.
+  ============================================================ -->
+  <section id="extracurriculars" class="section">
+    <div class="container">
+      <div class="section-header reveal">
+        <div>
+          <span class="eyebrow">06 — Extra-Curriculars</span>
+          <h2 class="section-title">Beyond the <em>Classroom</em></h2>
+        </div>
+        <p class="section-desc">Competition wins, editorial work, and academic achievements that complete the picture.</p>
+      </div>
+
+      <div class="ec-grid">
+
+        <div class="ec-card reveal">
+          <span class="ec-emoji">🎤</span>
+          <h3>University Debate Championship</h3>
+          <span class="ec-role">Winner — University-Wide Competition</span>
+          <p>Won the university-wide debate competition, demonstrating structured argumentation, on-the-spot reasoning, and persuasive communication under competitive pressure.</p>
+          <div class="ec-stat">
+            <span class="ec-stat-num">🏆</span>
+            <span class="ec-stat-label">Winner · Mahindra University</span>
+          </div>
+        </div>
+
+        <div class="ec-card reveal reveal-d1">
+          <span class="ec-emoji">🚗</span>
+          <h3>General Motors Case Competition</h3>
+          <span class="ec-role">Winner · Mahindra University</span>
+          <p>Won the General Motors case competition hosted by Mahindra University, recognised for analytical rigour and structured problem-solving in a real-world business scenario.</p>
+          <div class="ec-stat">
+            <span class="ec-stat-num">🥇</span>
+            <span class="ec-stat-label">Recognised for structured problem-solving</span>
+          </div>
+        </div>
+
+        <div class="ec-card reveal reveal-d2">
+          <span class="ec-emoji">🌐</span>
+          <h3>Marketplace Simulations</h3>
+          <span class="ec-role">Top 3% Globally — Entrepreneurship Simulation</span>
+          <p>Achieved a top 3 percentile score worldwide in the Marketplace Simulations global entrepreneurship program, competing against thousands of students across international universities.</p>
+          <div class="ec-stat">
+            <span class="ec-stat-num">Top 3%</span>
+            <span class="ec-stat-label">Global ranking</span>
+          </div>
+        </div>
+
+        <div class="ec-card reveal">
+          <span class="ec-emoji">✍️</span>
+          <h3>The Echo — Opinion Forum</h3>
+          <span class="ec-role">Editor & Author · Sep '24 – Aug '25</span>
+          <p>Edited and wrote multiple published articles for Mahindra University's official newspaper — covering business, policy, and campus affairs with an opinion and analysis focus.</p>
+          <div class="ec-stat">
+            <span class="ec-stat-num">Multi</span>
+            <span class="ec-stat-label">Published articles · editorial + authorship</span>
+          </div>
+        </div>
+
+        <div class="ec-card reveal reveal-d1">
+          <span class="ec-emoji">🍳</span>
+          <h3>Cloud Kitchen — Live Startup</h3>
+          <span class="ec-role">CEO · Principles of Management Live Project</span>
+          <p>Served as CEO of a live startup built from scratch — covering ideation, branding, marketing, hiring, legal processing, and financial planning end-to-end as part of a course-embedded venture project.</p>
+          <div class="ec-stat">
+            <span class="ec-stat-num">0→1</span>
+            <span class="ec-stat-label">End-to-end venture build</span>
+          </div>
+        </div>
+
+        <div class="ec-card reveal reveal-d2">
+          <span class="ec-emoji">✈️</span>
+          <h3>Airbus SE — Risk Analysis</h3>
+          <span class="ec-role">Live Project · IRM Level 1 Certification</span>
+          <p>Created a comprehensive 100-point Risk Analysis Report for Airbus SE covering operational, financial, strategic, and compliance risk dimensions as the live capstone for the IRM Level 1 certification.</p>
+          <div class="ec-stat">
+            <span class="ec-stat-num">100pt</span>
+            <span class="ec-stat-label">Risk analysis · Airbus SE</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ============================================================
+       FOOTER
+       EDIT: Update email address and copyright year as needed.
+  ============================================================ -->
+  <footer>
+    <div class="container">
+      <div class="footer-inner">
+        <span class="footer-name">Chanakya <em>Naidu</em></span>
+        <div class="footer-links">
+          <!-- EDIT: Replace with your real email -->
+          <a href="mailto:your.email@example.com">Email</a>
+          <a href="https://linkedin.com/in/chanakya-naidu" target="_blank">LinkedIn</a>
+          <a href="assets/resume.pdf" target="_blank">View Resume</a>
+          <a href="assets/resume.pdf" download>Download Resume</a>
+        </div>
+        <span class="footer-copy">© 2025 Chanakya Naidu</span>
+      </div>
+    </div>
+  </footer>
+
+
+  <!-- ============================================================
+       JAVASCRIPT — All interactive behaviour.
+       You don't need to edit or understand this section.
+       Just don't delete it — the animations won't work without it.
+  ============================================================ -->
+  <script>
+    // ── 1. SCROLL PROGRESS BAR ──────────────────────────────────
+    // Calculates what % of the page has been scrolled and fills
+    // the thin bar at the top of the screen proportionally.
+    const progressBar = document.getElementById('progress-bar');
+    window.addEventListener('scroll', () => {
+      const scrolled = window.scrollY;
+      const total = document.documentElement.scrollHeight - window.innerHeight;
+      progressBar.style.width = ((scrolled / total) * 100) + '%';
+    }, { passive: true });
+
+    // ── 2. NAV SHADOW ON SCROLL ─────────────────────────────────
+    // Adds a subtle drop shadow to the nav bar once you scroll down.
+    const mainNav = document.getElementById('main-nav');
+    window.addEventListener('scroll', () => {
+      mainNav.classList.toggle('scrolled', window.scrollY > 40);
+    }, { passive: true });
+
+    // ── 3. ACTIVE NAV LINK HIGHLIGHT ────────────────────────────
+    // Figures out which section is currently on screen and
+    // highlights the matching nav link with the blue underline.
+    const sections     = document.querySelectorAll('section[id]');
+    const navAnchors   = document.querySelectorAll('.nav-links a[href^="#"]');
+    window.addEventListener('scroll', () => {
+      let current = '';
+      sections.forEach(s => {
+        if (window.scrollY >= s.offsetTop - 120) current = s.id;
+      });
+      navAnchors.forEach(a => {
+        a.classList.toggle('active', a.getAttribute('href') === '#' + current);
+      });
+    }, { passive: true });
+
+    // ── 4. SCROLL REVEAL ANIMATION ──────────────────────────────
+    // Watches all elements with class "reveal". When they scroll
+    // into view, adds "visible" which triggers the CSS fade-up.
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target); // animate only once
+        }
+      });
+    }, { threshold: 0.08 });
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+    // ── 5. MOBILE HAMBURGER MENU ────────────────────────────────
+    // Opens and closes the mobile dropdown navigation.
+    const hamburger  = document.getElementById('hamburger');
+    const mobileMenu = document.getElementById('mobile-nav');
+    hamburger.addEventListener('click', () => {
+      mobileMenu.classList.toggle('open');
+    });
+    // This function is called by onclick attributes in the mobile menu links
+    function closeMobileNav() {
+      mobileMenu.classList.remove('open');
+    }
+    // Close the menu if user taps anywhere outside of it
+    document.addEventListener('click', e => {
+      if (!hamburger.contains(e.target) && !mobileMenu.contains(e.target)) {
+        mobileMenu.classList.remove('open');
+      }
+    });
+
+    // ── 6. HERO PARALLAX ────────────────────────────────────────
+    // Makes the decorative gradient blobs behind the hero text
+    // drift slightly as you scroll — creates subtle depth.
+    const landing = document.getElementById('landing');
+    window.addEventListener('scroll', () => {
+      if (window.scrollY < window.innerHeight * 1.2) {
+        const shift = window.scrollY * 0.25;
+        landing.style.setProperty('--parallax-y', shift + 'px');
+      }
+    }, { passive: true });
+  </script>
+
+</body>
+</html>
