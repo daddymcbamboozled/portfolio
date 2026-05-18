@@ -3,853 +3,612 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <!-- ============================================================
-       EDIT THIS: Change "Chanakya Naidu" to your name in the tab title
-  ============================================================ -->
   <title>Chanakya Naidu — Portfolio</title>
-
-  <!-- ============================================================
-       FONTS: Loaded automatically from Google — no download needed.
-       - "Cormorant Garamond" = elegant serif for headings
-       - "DM Sans" = clean modern font for body text
-  ============================================================ -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet" />
 
   <style>
     /* ============================================================
-       DESIGN TOKENS
-       These are the master variables for colors, fonts, and spacing.
-       Change a value here once and it updates everywhere on the page.
+       DESIGN TOKENS — Edit these to change colors/fonts globally
     ============================================================ */
     :root {
-      --bg:           #faf8f4;       /* warm off-white page background */
-      --bg-card:      #ffffff;       /* white card surfaces */
-      --bg-subtle:    #f3f0ea;       /* slightly darker surface */
-      --border:       #e8e2d9;       /* light border between elements */
-      --text:         #1a1916;       /* near-black for body text */
-      --muted:        #7a756c;       /* grey for secondary text */
-      --accent:       #005698;       /* your primary blue — used everywhere */
-      --accent-dark:  #003d6b;       /* darker blue for hover states */
-      --accent-lt:    #e8f0f8;       /* very light blue for pill backgrounds */
+      --bg:           #faf8f4;
+      --bg-card:      #ffffff;
+      --bg-subtle:    #f3f0ea;
+      --border:       #e8e2d9;
+      --text:         #1a1916;
+      --muted:        #7a756c;
+      --accent:       #005698;
+      --accent-dark:  #003d6b;
+      --accent-lt:    #e8f0f8;
       --serif:        'Cormorant Garamond', Georgia, serif;
       --sans:         'DM Sans', system-ui, sans-serif;
-      --radius:       14px;          /* rounded corners — larger = rounder */
+      --radius:       14px;
       --radius-sm:    8px;
-      --shadow:       0 4px 24px rgba(0, 86, 152, 0.08);
-      --shadow-hover: 0 12px 40px rgba(0, 86, 152, 0.16);
-      --nav-h:        68px;          /* height of the top navigation bar */
-      --max:          1160px;        /* maximum page width */
+      --shadow:       0 4px 24px rgba(0,86,152,.08);
+      --shadow-hover: 0 12px 40px rgba(0,86,152,.16);
+      --nav-h:        68px;
+      --max:          1160px;
     }
 
-    /* ============================================================
-       GLOBAL RESET — Clears default browser spacing and styling
-    ============================================================ */
+    /* ── RESET ── */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html { scroll-behavior: smooth; }
-    body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: var(--sans);
-      font-size: 16px;
-      line-height: 1.7;
-      font-weight: 300;
-      -webkit-font-smoothing: antialiased;
-      overflow-x: hidden;
-    }
-    img { display: block; max-width: 100%; }
-    a { color: inherit; text-decoration: none; }
+    body { background:var(--bg); color:var(--text); font-family:var(--sans); font-size:16px; line-height:1.7; font-weight:300; -webkit-font-smoothing:antialiased; overflow-x:hidden; }
+    img { display:block; max-width:100%; }
+    a { color:inherit; text-decoration:none; }
+
+    /* ── PROGRESS BAR ── */
+    #progress-bar { position:fixed; top:0; left:0; height:3px; width:0%; background:linear-gradient(90deg,var(--accent),#4da6ff); z-index:200; transition:width .08s linear; border-radius:0 2px 2px 0; }
+
+    /* ── UTILITIES ── */
+    .container { max-width:var(--max); margin:0 auto; padding:0 48px; }
+    .eyebrow { font-family:var(--sans); font-size:10px; font-weight:500; letter-spacing:.24em; text-transform:uppercase; color:var(--accent); margin-bottom:14px; display:block; }
+    .tag { display:inline-block; font-size:11px; font-weight:400; letter-spacing:.04em; padding:4px 12px; border:1px solid var(--border); border-radius:99px; color:var(--muted); background:var(--bg-card); transition:border-color .2s,color .2s; }
+    .tag-blue { background:var(--accent-lt); color:var(--accent); border-color:transparent; font-weight:500; }
+    .section-divider { border:none; border-top:1px solid var(--border); margin:0; }
+
+    /* ── SCROLL REVEAL ── */
+    .reveal { opacity:0; transform:translateY(28px); transition:opacity .75s cubic-bezier(.16,1,.3,1), transform .75s cubic-bezier(.16,1,.3,1); }
+    .reveal.visible { opacity:1; transform:none; }
+    .reveal-d1 { transition-delay:.12s; }
+    .reveal-d2 { transition-delay:.22s; }
+    .reveal-d3 { transition-delay:.32s; }
+    .reveal-d4 { transition-delay:.42s; }
 
     /* ============================================================
-       SCROLL PROGRESS BAR
-       The thin blue line at the very top that fills as you scroll.
+       NAVIGATION
     ============================================================ */
-    #progress-bar {
-      position: fixed;
-      top: 0; left: 0;
-      height: 3px;
-      width: 0%;
-      background: linear-gradient(90deg, var(--accent), #4da6ff);
-      z-index: 200;
-      transition: width .08s linear;
-      border-radius: 0 2px 2px 0;
-    }
+    nav { position:fixed; top:3px; left:0; right:0; height:var(--nav-h); background:rgba(250,248,244,.88); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); border-bottom:1px solid var(--border); z-index:100; transition:box-shadow .3s; }
+    nav.scrolled { box-shadow:0 2px 24px rgba(0,0,0,.07); }
+    .nav-inner { max-width:var(--max); margin:0 auto; padding:0 48px; height:100%; display:flex; justify-content:space-between; align-items:center; }
+    .nav-logo { font-family:var(--serif); font-size:22px; font-weight:600; letter-spacing:-.01em; color:var(--text); transition:color .2s; }
+    .nav-logo:hover { color:var(--accent); }
+    .nav-links { display:flex; gap:28px; list-style:none; align-items:center; }
+    .nav-links a { font-size:11.5px; font-weight:400; letter-spacing:.1em; text-transform:uppercase; color:var(--muted); position:relative; padding-bottom:2px; transition:color .2s; }
+    .nav-links a::after { content:''; position:absolute; bottom:-2px; left:0; width:0; height:1.5px; background:var(--accent); transition:width .3s ease; border-radius:1px; }
+    .nav-links a:hover, .nav-links a.active { color:var(--accent); }
+    .nav-links a:hover::after, .nav-links a.active::after { width:100%; }
+    .nav-resume-btn { font-size:11px !important; font-weight:500 !important; color:var(--accent) !important; border:1.5px solid var(--accent); padding:7px 18px !important; border-radius:99px; transition:background .2s,color .2s !important; }
+    .nav-resume-btn:hover { background:var(--accent); color:#fff !important; }
+    .nav-resume-btn::after { display:none !important; }
+    .nav-hamburger { display:none; flex-direction:column; gap:5px; cursor:pointer; padding:4px; }
+    .nav-hamburger span { display:block; width:24px; height:1.5px; background:var(--text); transition:.3s; }
+
+    /* ── BUTTONS ── */
+    .btn { display:inline-flex; align-items:center; gap:8px; font-family:var(--sans); font-size:12px; font-weight:500; letter-spacing:.1em; text-transform:uppercase; padding:13px 26px; border-radius:99px; cursor:pointer; transition:transform .2s,box-shadow .2s,background .2s,color .2s,border-color .2s; border:1.5px solid transparent; }
+    .btn:hover { transform:translateY(-2px); }
+    .btn-solid { background:var(--accent); color:#fff; box-shadow:0 4px 16px rgba(0,86,152,.22); }
+    .btn-solid:hover { background:var(--accent-dark); box-shadow:0 8px 28px rgba(0,86,152,.32); }
+    .btn-ghost { background:transparent; color:var(--text); border-color:var(--border); }
+    .btn-ghost:hover { border-color:var(--accent); color:var(--accent); }
+    .btn-outline-blue { background:transparent; color:var(--accent); border-color:var(--accent); }
+    .btn-outline-blue:hover { background:var(--accent); color:#fff; }
+
+    /* ── SECTION SHELL ── */
+    .section { padding:112px 0; position:relative; }
+    section[id] { scroll-margin-top:calc(var(--nav-h) + 16px); }
+    .section-header { display:flex; align-items:flex-end; justify-content:space-between; gap:40px; margin-bottom:72px; }
+    .section-title { font-family:var(--serif); font-size:clamp(36px,4vw,58px); font-weight:300; line-height:1.08; letter-spacing:-.01em; }
+    .section-title em { font-style:italic; color:var(--accent); }
+    .section-desc { max-width:340px; font-size:14px; color:var(--muted); line-height:1.8; text-align:right; padding-bottom:6px; }
 
     /* ============================================================
-       REUSABLE UTILITIES
+       SECTION 1 — HERO
     ============================================================ */
-    .container { max-width: var(--max); margin: 0 auto; padding: 0 48px; }
-
-    /* Small uppercase label above section headings */
-    .eyebrow {
-      font-family: var(--sans);
-      font-size: 10px;
-      font-weight: 500;
-      letter-spacing: .24em;
-      text-transform: uppercase;
-      color: var(--accent);
-      margin-bottom: 14px;
-      display: block;
-    }
-
-    /* Pill-shaped tags used throughout cards */
-    .tag {
-      display: inline-block;
-      font-size: 11px;
-      font-weight: 400;
-      letter-spacing: .04em;
-      padding: 4px 12px;
-      border: 1px solid var(--border);
-      border-radius: 99px;
-      color: var(--muted);
-      background: var(--bg-card);
-      transition: border-color .2s, color .2s;
-    }
-    .tag:hover { border-color: var(--accent); color: var(--accent); }
-
-    /* Blue-filled tag variant */
-    .tag-blue {
-      background: var(--accent-lt);
-      color: var(--accent);
-      border-color: transparent;
-      font-weight: 500;
-    }
-
-    /* Thin horizontal line between sections */
-    .section-divider { border: none; border-top: 1px solid var(--border); margin: 0; }
+    #landing { min-height:100vh; padding-top:var(--nav-h); display:flex; align-items:center; position:relative; overflow:hidden; }
+    #landing::before { content:''; position:absolute; top:-180px; right:-180px; width:680px; height:680px; background:radial-gradient(circle,rgba(0,86,152,.07) 0%,transparent 65%); border-radius:50%; pointer-events:none; }
+    #landing::after { content:''; position:absolute; bottom:-120px; left:-120px; width:480px; height:480px; background:radial-gradient(circle,rgba(0,86,152,.05) 0%,transparent 65%); border-radius:50%; pointer-events:none; }
+    .landing-grid { display:grid; grid-template-columns:1fr 400px; gap:80px; align-items:center; width:100%; padding:80px 0 96px; position:relative; z-index:1; }
+    .landing-name { font-family:var(--serif); font-size:clamp(58px,6.5vw,94px); font-weight:300; line-height:1.02; letter-spacing:-.02em; margin-bottom:28px; }
+    .landing-name em { font-style:italic; color:var(--accent); }
+    .landing-bio { font-size:17px; color:var(--muted); line-height:1.85; max-width:540px; margin-bottom:40px; }
+    .landing-cta { display:flex; gap:14px; flex-wrap:wrap; margin-bottom:52px; }
+    .landing-quick-links { display:flex; flex-wrap:wrap; border-top:1px solid var(--border); padding-top:28px; }
+    .quick-link { display:flex; align-items:center; gap:7px; font-size:11px; font-weight:500; letter-spacing:.12em; text-transform:uppercase; color:var(--muted); padding:8px 24px 8px 0; margin-right:24px; border-right:1px solid var(--border); transition:color .2s; }
+    .quick-link:last-child { border-right:none; margin-right:0; }
+    .quick-link:hover { color:var(--accent); }
+    .ql-arrow { font-size:11px; opacity:.5; transition:transform .2s,opacity .2s; }
+    .quick-link:hover .ql-arrow { transform:translate(3px,-3px); opacity:1; }
+    .photo-frame { position:relative; }
+    .photo-frame::before { content:''; position:absolute; top:22px; left:22px; right:-22px; bottom:-22px; border:1.5px solid var(--border); border-radius:var(--radius); z-index:0; }
+    .photo-frame img, .photo-placeholder { position:relative; z-index:1; width:100%; aspect-ratio:3/4; border-radius:var(--radius); }
+    .photo-frame img { object-fit:cover; }
+    .photo-placeholder { background:var(--bg-subtle); border:1.5px solid var(--border); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px; color:var(--muted); font-size:13px; }
+    .photo-badge { position:absolute; z-index:2; bottom:-12px; left:-12px; background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius-sm); padding:14px 18px; box-shadow:var(--shadow); display:flex; align-items:center; gap:12px; min-width:190px; }
+    .photo-badge-icon { width:36px; height:36px; background:var(--accent-lt); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:16px; flex-shrink:0; }
+    .photo-badge-text strong { display:block; font-size:13px; font-weight:500; }
+    .photo-badge-text span { color:var(--muted); font-size:11px; }
 
     /* ============================================================
-       SCROLL REVEAL ANIMATION
-       Elements start invisible and fade up. The JS at the bottom
-       adds class "visible" when they enter the viewport.
+       SECTION 2 — ABOUT
     ============================================================ */
-    .reveal {
-      opacity: 0;
-      transform: translateY(28px);
-      transition: opacity .75s cubic-bezier(.16,1,.3,1),
-                  transform .75s cubic-bezier(.16,1,.3,1);
-    }
-    .reveal.visible { opacity: 1; transform: none; }
-    /* Stagger delays so items in a row animate one-by-one */
-    .reveal-d1 { transition-delay: .12s; }
-    .reveal-d2 { transition-delay: .22s; }
-    .reveal-d3 { transition-delay: .32s; }
-    .reveal-d4 { transition-delay: .42s; }
+    .about-strip { display:grid; grid-template-columns:repeat(3,1fr); gap:24px; }
+    .about-tile { background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius); padding:36px; transition:box-shadow .3s,transform .3s,border-color .3s; position:relative; overflow:hidden; }
+    .about-tile::after { content:''; position:absolute; top:0; left:0; right:0; height:3px; background:linear-gradient(90deg,var(--accent),#4da6ff); transform:scaleX(0); transform-origin:left; transition:transform .35s ease; border-radius:var(--radius) var(--radius) 0 0; }
+    .about-tile:hover::after { transform:scaleX(1); }
+    .about-tile:hover { box-shadow:var(--shadow-hover); transform:translateY(-5px); border-color:transparent; }
+    .tile-icon { width:48px; height:48px; background:var(--accent-lt); border-radius:50%; display:flex; align-items:center; justify-content:center; margin-bottom:22px; }
+    .tile-icon svg { color:var(--accent); }
+    .about-tile h3 { font-family:var(--serif); font-size:24px; font-weight:400; margin-bottom:10px; }
+    .about-tile p { font-size:13px; color:var(--muted); line-height:1.8; margin-bottom:22px; }
+    .tile-actions { display:flex; gap:10px; flex-wrap:wrap; }
 
     /* ============================================================
-       NAVIGATION BAR
-       Fixed at the top. Blurs content behind it (frosted glass).
+       SECTION 3 — RECOMMENDATIONS (NEW)
+       Horizontally scrollable cards with professor quotes.
     ============================================================ */
-    nav {
-      position: fixed;
-      top: 3px; left: 0; right: 0;
-      height: var(--nav-h);
-      background: rgba(250, 248, 244, 0.88);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border-bottom: 1px solid var(--border);
-      z-index: 100;
-      transition: box-shadow .3s;
-    }
-    nav.scrolled { box-shadow: 0 2px 24px rgba(0,0,0,.07); }
+    #recommendations { padding:80px 0; }
 
-    .nav-inner {
-      max-width: var(--max);
-      margin: 0 auto;
-      padding: 0 48px;
-      height: 100%;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+    /* The outer wrapper clips overflow so cards don't spill out */
+    .rec-scroll-wrapper { position:relative; }
+
+    /* Fade-out gradient on the right edge to hint there's more content */
+    .rec-scroll-wrapper::after {
+      content:'';
+      position:absolute;
+      top:0; right:0; bottom:24px;
+      width:80px;
+      background:linear-gradient(to left, var(--bg), transparent);
+      pointer-events:none;
+      z-index:2;
     }
 
-    /* Your name — top left of the nav */
-    .nav-logo {
-      font-family: var(--serif);
-      font-size: 22px;
-      font-weight: 600;
-      letter-spacing: -.01em;
-      color: var(--text);
-      transition: color .2s;
+    /* The scrollable track that holds all the cards side by side */
+    .rec-track {
+      display:flex;
+      gap:20px;
+      overflow-x:auto;
+      scroll-snap-type:x mandatory;    /* snaps to each card */
+      padding-bottom:24px;             /* space for scrollbar */
+      padding-right:80px;              /* space for fade gradient */
+      -ms-overflow-style:none;         /* hide scrollbar on IE */
+      scrollbar-width:none;            /* hide scrollbar on Firefox */
     }
-    .nav-logo:hover { color: var(--accent); }
+    .rec-track::-webkit-scrollbar { display:none; } /* hide scrollbar on Chrome/Safari */
 
-    .nav-links {
-      display: flex;
-      gap: 32px;
-      list-style: none;
-      align-items: center;
+    /* Individual recommendation card */
+    .rec-card {
+      flex:0 0 400px;                  /* fixed width — won't shrink */
+      scroll-snap-align:start;
+      background:var(--bg-card);
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      padding:36px;
+      display:flex;
+      flex-direction:column;
+      gap:0;
+      transition:box-shadow .3s, transform .3s, border-color .3s;
+      position:relative;
+      overflow:hidden;
     }
-    .nav-links a {
-      font-size: 12px;
-      font-weight: 400;
-      letter-spacing: .1em;
-      text-transform: uppercase;
-      color: var(--muted);
-      position: relative;
-      padding-bottom: 2px;
-      transition: color .2s;
-    }
-    /* Animated underline on nav links */
-    .nav-links a::after {
-      content: '';
-      position: absolute;
-      bottom: -2px; left: 0;
-      width: 0; height: 1.5px;
-      background: var(--accent);
-      transition: width .3s ease;
-      border-radius: 1px;
-    }
-    .nav-links a:hover,
-    .nav-links a.active { color: var(--accent); }
-    .nav-links a:hover::after,
-    .nav-links a.active::after { width: 100%; }
+    .rec-card:hover { box-shadow:var(--shadow-hover); transform:translateY(-4px); border-color:rgba(0,86,152,.2); }
 
-    /* Resume button in the nav (rounded outline style) */
-    .nav-resume-btn {
-      font-size: 11px !important;
-      font-weight: 500 !important;
-      color: var(--accent) !important;
-      border: 1.5px solid var(--accent);
-      padding: 7px 20px !important;
-      border-radius: 99px;
-      letter-spacing: .1em !important;
-      transition: background .2s, color .2s !important;
+    /* Blue top bar on hover */
+    .rec-card::before {
+      content:'';
+      position:absolute; top:0; left:0; right:0; height:3px;
+      background:linear-gradient(90deg,var(--accent),#4da6ff);
+      transform:scaleX(0); transform-origin:left; transition:transform .35s;
+      border-radius:var(--radius) var(--radius) 0 0;
     }
-    .nav-resume-btn:hover { background: var(--accent); color: #fff !important; }
-    .nav-resume-btn::after { display: none !important; }
+    .rec-card:hover::before { transform:scaleX(1); }
 
-    /* Hamburger icon — visible only on mobile */
-    .nav-hamburger {
-      display: none;
-      flex-direction: column;
-      gap: 5px;
-      cursor: pointer;
-      padding: 4px;
+    /* Large opening quotation mark */
+    .rec-quote-mark {
+      font-family:var(--serif);
+      font-size:72px;
+      line-height:.8;
+      color:var(--accent-lt);
+      margin-bottom:12px;
+      display:block;
+      user-select:none;
     }
-    .nav-hamburger span { display: block; width: 24px; height: 1.5px; background: var(--text); transition: .3s; }
+
+    /* The actual recommendation text */
+    .rec-text {
+      font-size:14px;
+      color:var(--muted);
+      line-height:1.85;
+      font-style:italic;
+      flex:1;
+      margin-bottom:28px;
+    }
+
+    /* Bottom row: photo + name + LinkedIn link */
+    .rec-person {
+      display:flex;
+      align-items:center;
+      gap:14px;
+      padding-top:20px;
+      border-top:1px solid var(--border);
+    }
+
+    /* Circular professor photo frame */
+    .rec-photo {
+      width:52px; height:52px;
+      border-radius:50%;
+      overflow:hidden;
+      border:2px solid var(--border);
+      flex-shrink:0;
+      background:var(--bg-subtle);
+      display:flex; align-items:center; justify-content:center;
+    }
+    .rec-photo img { width:100%; height:100%; object-fit:cover; }
+
+    /* Initials fallback if no photo */
+    .rec-photo-initials {
+      font-family:var(--serif);
+      font-size:18px;
+      font-weight:600;
+      color:var(--accent);
+    }
+
+    .rec-meta { flex:1; }
+    .rec-name { font-family:var(--serif); font-size:17px; font-weight:400; line-height:1.2; margin-bottom:2px; }
+    .rec-title-text { font-size:11px; color:var(--muted); line-height:1.4; margin-bottom:6px; }
+
+    /* LinkedIn link at the bottom of the card */
+    .rec-li-link {
+      display:inline-flex; align-items:center; gap:5px;
+      font-size:11px; font-weight:500; letter-spacing:.06em; text-transform:uppercase;
+      color:var(--accent);
+      transition:gap .2s;
+    }
+    .rec-li-link:hover { gap:8px; }
+
+    /* Scroll arrow buttons (prev/next) */
+    .rec-nav { display:flex; gap:10px; margin-top:16px; justify-content:flex-end; }
+    .rec-nav-btn {
+      width:40px; height:40px; border-radius:50%;
+      border:1.5px solid var(--border); background:var(--bg-card);
+      display:flex; align-items:center; justify-content:center;
+      cursor:pointer; transition:border-color .2s, background .2s, transform .2s;
+      color:var(--muted);
+    }
+    .rec-nav-btn:hover { border-color:var(--accent); color:var(--accent); transform:scale(1.05); }
 
     /* ============================================================
-       BUTTONS — Two main styles used throughout
+       SECTION 4 — CAREER TIMELINE
     ============================================================ */
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      font-family: var(--sans);
-      font-size: 12px;
-      font-weight: 500;
-      letter-spacing: .1em;
-      text-transform: uppercase;
-      padding: 13px 26px;
-      border-radius: 99px;
-      cursor: pointer;
-      transition: transform .2s, box-shadow .2s, background .2s, color .2s, border-color .2s;
-      border: 1.5px solid transparent;
-    }
-    .btn:hover { transform: translateY(-2px); }
-
-    .btn-solid {
-      background: var(--accent);
-      color: #fff;
-      box-shadow: 0 4px 16px rgba(0,86,152,.22);
-    }
-    .btn-solid:hover { background: var(--accent-dark); box-shadow: 0 8px 28px rgba(0,86,152,.32); }
-
-    .btn-ghost {
-      background: transparent;
-      color: var(--text);
-      border-color: var(--border);
-    }
-    .btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
-
-    .btn-outline-blue {
-      background: transparent;
-      color: var(--accent);
-      border-color: var(--accent);
-    }
-    .btn-outline-blue:hover { background: var(--accent); color: #fff; }
+    .timeline { display:flex; flex-direction:column; }
+    .timeline-item { display:grid; grid-template-columns:260px 1fr; gap:48px; padding:48px 0; border-bottom:1px solid var(--border); transition:background .2s; }
+    .timeline-item:first-child { border-top:1px solid var(--border); }
+    .timeline-left { padding-top:4px; }
+    .timeline-logo { width:56px; height:56px; border-radius:var(--radius-sm); border:1px solid var(--border); background:var(--bg-card); display:flex; align-items:center; justify-content:center; overflow:hidden; margin-bottom:16px; }
+    .timeline-logo img { width:100%; height:100%; object-fit:contain; padding:8px; }
+    .timeline-logo-fallback { font-family:var(--serif); font-size:18px; font-weight:600; color:var(--accent); }
+    .timeline-date { font-size:13px; color:var(--muted); margin-bottom:8px; }
+    .timeline-badge { display:inline-block; font-size:10px; font-weight:500; letter-spacing:.14em; text-transform:uppercase; color:var(--accent); background:var(--accent-lt); padding:4px 10px; border-radius:99px; }
+    .timeline-title { font-family:var(--serif); font-size:27px; font-weight:400; margin-bottom:4px; line-height:1.2; }
+    .timeline-org { font-size:14px; color:var(--muted); font-style:italic; margin-bottom:20px; }
+    .timeline-bullets { list-style:none; display:flex; flex-direction:column; gap:10px; margin-bottom:16px; }
+    .timeline-bullets li { font-size:14px; color:var(--muted); line-height:1.75; display:flex; gap:12px; }
+    .timeline-bullets li::before { content:''; display:block; width:6px; height:6px; border-radius:50%; background:var(--accent); flex-shrink:0; margin-top:9px; }
+    .timeline-tags { display:flex; gap:8px; flex-wrap:wrap; }
+    .timeline-item.education .timeline-title { color:var(--accent); }
 
     /* ============================================================
-       SECTION SHELL — Shared padding for all main sections
+       GRADES TICKER BAR (between Experience and Projects)
+       Horizontally scrolling strip of courses + grades.
+       Click anywhere to open the full grades table in a popup.
     ============================================================ */
-    .section { padding: 112px 0; position: relative; }
-    section[id] { scroll-margin-top: calc(var(--nav-h) + 16px); }
-
-    .section-header {
-      display: flex;
-      align-items: flex-end;
-      justify-content: space-between;
-      gap: 40px;
-      margin-bottom: 72px;
+    .ticker-wrap {
+      background:var(--accent);
+      overflow:hidden;
+      cursor:pointer;
+      padding:15px 0;
+      user-select:none;
+      position:relative;
     }
-    .section-title {
-      font-family: var(--serif);
-      font-size: clamp(36px, 4vw, 58px);
-      font-weight: 300;
-      line-height: 1.08;
-      letter-spacing: -.01em;
+    /* "Click to view" label on the right */
+    .ticker-click-hint {
+      position:absolute; right:0; top:0; bottom:0;
+      display:flex; align-items:center;
+      padding:0 24px;
+      font-size:10px; font-weight:500; letter-spacing:.16em; text-transform:uppercase;
+      color:rgba(255,255,255,.6);
+      background:linear-gradient(to left,var(--accent) 60%,transparent);
+      pointer-events:none;
+      z-index:2;
     }
-    .section-title em { font-style: italic; color: var(--accent); }
-    .section-desc {
-      max-width: 340px;
-      font-size: 14px;
-      color: var(--muted);
-      line-height: 1.8;
-      text-align: right;
-      padding-bottom: 6px;
+    /* The moving strip */
+    .ticker-inner {
+      display:flex;
+      width:max-content;
+      animation:ticker-scroll 60s linear infinite;
     }
+    .ticker-wrap:hover .ticker-inner { animation-play-state:paused; }
+    @keyframes ticker-scroll {
+      from { transform:translateX(0); }
+      to   { transform:translateX(-50%); } /* moves left by half — seamless loop */
+    }
+    .ticker-item {
+      white-space:nowrap;
+      font-size:12.5px; font-weight:400; letter-spacing:.06em;
+      color:rgba(255,255,255,.9);
+      padding:0 8px;
+    }
+    .ticker-sep { color:rgba(255,255,255,.3); padding:0 16px; }
+    .ticker-grade { font-weight:500; color:#fff; }
 
     /* ============================================================
-       SECTION 1 — HERO / LANDING
+       GRADES MODAL POPUP
+       Appears when the ticker bar is clicked.
     ============================================================ */
-    #landing {
-      min-height: 100vh;
-      padding-top: var(--nav-h);
-      display: flex;
-      align-items: center;
-      position: relative;
-      overflow: hidden;
+    .modal-overlay {
+      position:fixed; inset:0;
+      background:rgba(0,0,0,.45);
+      backdrop-filter:blur(6px);
+      z-index:500;
+      display:flex; align-items:center; justify-content:center;
+      opacity:0; pointer-events:none;
+      transition:opacity .3s ease;
     }
+    .modal-overlay.open { opacity:1; pointer-events:all; }
 
-    /* Decorative gradient blobs behind the hero */
-    #landing::before {
-      content: '';
-      position: absolute;
-      top: -180px; right: -180px;
-      width: 680px; height: 680px;
-      background: radial-gradient(circle, rgba(0,86,152,.07) 0%, transparent 65%);
-      border-radius: 50%;
-      pointer-events: none;
+    .modal-card {
+      background:var(--bg-card);
+      border-radius:var(--radius);
+      padding:48px;
+      max-width:740px; width:92%;
+      max-height:82vh;
+      overflow-y:auto;
+      transform:translateY(20px);
+      transition:transform .35s cubic-bezier(.16,1,.3,1);
+      position:relative;
     }
-    #landing::after {
-      content: '';
-      position: absolute;
-      bottom: -120px; left: -120px;
-      width: 480px; height: 480px;
-      background: radial-gradient(circle, rgba(0,86,152,.05) 0%, transparent 65%);
-      border-radius: 50%;
-      pointer-events: none;
-    }
+    .modal-overlay.open .modal-card { transform:none; }
 
-    .landing-grid {
-      display: grid;
-      grid-template-columns: 1fr 400px;
-      gap: 80px;
-      align-items: center;
-      width: 100%;
-      padding: 80px 0 96px;
-      position: relative;
-      z-index: 1;
+    .modal-close {
+      position:absolute; top:20px; right:24px;
+      width:36px; height:36px; border-radius:50%;
+      border:1px solid var(--border); background:var(--bg-card);
+      font-size:18px; cursor:pointer; color:var(--muted);
+      display:flex; align-items:center; justify-content:center;
+      transition:border-color .2s,color .2s;
+      line-height:1;
     }
+    .modal-close:hover { border-color:var(--accent); color:var(--accent); }
 
-    .landing-name {
-      font-family: var(--serif);
-      font-size: clamp(58px, 6.5vw, 94px);
-      font-weight: 300;
-      line-height: 1.02;
-      letter-spacing: -.02em;
-      margin-bottom: 28px;
-    }
-    .landing-name em { font-style: italic; color: var(--accent); }
+    .modal-title { font-family:var(--serif); font-size:34px; font-weight:300; margin-bottom:6px; }
+    .modal-title em { font-style:italic; color:var(--accent); }
+    .modal-sub { font-size:13px; color:var(--muted); margin-bottom:32px; }
 
-    .landing-bio {
-      font-size: 17px;
-      color: var(--muted);
-      line-height: 1.85;
-      max-width: 540px;
-      margin-bottom: 40px;
-    }
+    /* Semester group header */
+    .modal-sem { font-size:10px; font-weight:500; letter-spacing:.2em; text-transform:uppercase; color:var(--accent); margin:24px 0 10px; padding-bottom:8px; border-bottom:1px solid var(--border); }
+    .modal-sem:first-of-type { margin-top:0; }
 
-    .landing-cta { display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 52px; }
+    /* Grades table */
+    .grades-table { width:100%; border-collapse:collapse; }
+    .grades-table td { padding:10px 12px; font-size:13.5px; border-bottom:1px solid var(--border); }
+    .grades-table td:first-child { color:var(--text); }
+    .grades-table td:last-child { text-align:right; font-weight:500; color:var(--accent); white-space:nowrap; }
+    .grades-table tr:last-child td { border-bottom:none; }
+    .grades-table tr:hover td { background:var(--bg-subtle); }
 
-    /* Quick section-jump links at the bottom of the hero */
-    .landing-quick-links {
-      display: flex;
-      flex-wrap: wrap;
-      border-top: 1px solid var(--border);
-      padding-top: 28px;
-    }
-    .quick-link {
-      display: flex;
-      align-items: center;
-      gap: 7px;
-      font-size: 11px;
-      font-weight: 500;
-      letter-spacing: .12em;
-      text-transform: uppercase;
-      color: var(--muted);
-      padding: 8px 24px 8px 0;
-      margin-right: 24px;
-      border-right: 1px solid var(--border);
-      transition: color .2s;
-    }
-    .quick-link:last-child { border-right: none; margin-right: 0; }
-    .quick-link:hover { color: var(--accent); }
-    .ql-arrow { font-size: 11px; opacity: .5; transition: transform .2s, opacity .2s; }
-    .quick-link:hover .ql-arrow { transform: translate(3px,-3px); opacity: 1; }
-
-    /* Photo frame with decorative offset border */
-    .photo-frame { position: relative; }
-    .photo-frame::before {
-      content: '';
-      position: absolute;
-      top: 22px; left: 22px; right: -22px; bottom: -22px;
-      border: 1.5px solid var(--border);
-      border-radius: var(--radius);
-      z-index: 0;
-    }
-    .photo-frame img,
-    .photo-placeholder {
-      position: relative;
-      z-index: 1;
-      width: 100%;
-      aspect-ratio: 3/4;
-      border-radius: var(--radius);
-    }
-    .photo-frame img { object-fit: cover; }
-    .photo-placeholder {
-      background: var(--bg-subtle);
-      border: 1.5px solid var(--border);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 12px;
-      color: var(--muted);
-      font-size: 13px;
-    }
-
-    /* Small badge that floats over the photo */
-    .photo-badge {
-      position: absolute;
-      z-index: 2;
-      bottom: -12px;
-      left: -12px;
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      padding: 14px 18px;
-      box-shadow: var(--shadow);
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      min-width: 190px;
-    }
-    .photo-badge-icon {
-      width: 36px; height: 36px;
-      background: var(--accent-lt);
-      border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 16px;
-      flex-shrink: 0;
-    }
-    .photo-badge-text strong { display: block; font-size: 13px; font-weight: 500; }
-    .photo-badge-text span { color: var(--muted); font-size: 11px; }
+    /* GPA summary row */
+    .modal-gpa { display:flex; align-items:center; justify-content:space-between; margin-top:28px; padding:20px 24px; background:var(--accent-lt); border-radius:var(--radius-sm); }
+    .modal-gpa-label { font-size:12px; font-weight:500; letter-spacing:.12em; text-transform:uppercase; color:var(--accent); }
+    .modal-gpa-value { font-family:var(--serif); font-size:36px; font-weight:300; color:var(--accent); }
 
     /* ============================================================
-       SECTION 2 — ABOUT ME
+       SECTION 5 — PROJECTS
     ============================================================ */
-    .about-strip { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+    .projects-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:24px; }
 
-    .about-tile {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 36px;
-      transition: box-shadow .3s, transform .3s, border-color .3s;
-      position: relative;
-      overflow: hidden;
-    }
-    /* Animated blue top bar on hover */
-    .about-tile::after {
-      content: '';
-      position: absolute;
-      top: 0; left: 0; right: 0; height: 3px;
-      background: linear-gradient(90deg, var(--accent), #4da6ff);
-      transform: scaleX(0);
-      transform-origin: left;
-      transition: transform .35s ease;
-      border-radius: var(--radius) var(--radius) 0 0;
-    }
-    .about-tile:hover::after { transform: scaleX(1); }
-    .about-tile:hover { box-shadow: var(--shadow-hover); transform: translateY(-5px); border-color: transparent; }
-
-    .tile-icon {
-      width: 48px; height: 48px;
-      background: var(--accent-lt);
-      border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      margin-bottom: 22px;
-    }
-    .tile-icon svg { color: var(--accent); }
-    .about-tile h3 { font-family: var(--serif); font-size: 24px; font-weight: 400; margin-bottom: 10px; }
-    .about-tile p { font-size: 13px; color: var(--muted); line-height: 1.8; margin-bottom: 22px; }
-    .tile-actions { display: flex; gap: 10px; flex-wrap: wrap; }
-
-    /* ============================================================
-       SECTION 3 — CAREER TIMELINE
-    ============================================================ */
-    .timeline { display: flex; flex-direction: column; }
-
-    .timeline-item {
-      display: grid;
-      grid-template-columns: 260px 1fr;
-      gap: 48px;
-      padding: 48px 0;
-      border-bottom: 1px solid var(--border);
-      transition: background .2s;
-    }
-    .timeline-item:first-child { border-top: 1px solid var(--border); }
-
-    .timeline-left { padding-top: 4px; }
-
-    /* Company logo square */
-    .timeline-logo {
-      width: 56px; height: 56px;
-      border-radius: var(--radius-sm);
-      border: 1px solid var(--border);
-      background: var(--bg-card);
-      display: flex; align-items: center; justify-content: center;
-      overflow: hidden;
-      margin-bottom: 16px;
-    }
-    .timeline-logo img { width: 100%; height: 100%; object-fit: contain; padding: 8px; }
-    .timeline-logo-fallback { font-family: var(--serif); font-size: 18px; font-weight: 600; color: var(--accent); }
-
-    .timeline-date { font-size: 13px; color: var(--muted); margin-bottom: 8px; }
-    .timeline-badge {
-      display: inline-block;
-      font-size: 10px; font-weight: 500; letter-spacing: .14em; text-transform: uppercase;
-      color: var(--accent); background: var(--accent-lt);
-      padding: 4px 10px; border-radius: 99px;
-    }
-
-    .timeline-title { font-family: var(--serif); font-size: 27px; font-weight: 400; margin-bottom: 4px; line-height: 1.2; }
-    .timeline-org { font-size: 14px; color: var(--muted); font-style: italic; margin-bottom: 20px; }
-
-    .timeline-bullets { list-style: none; display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; }
-    .timeline-bullets li { font-size: 14px; color: var(--muted); line-height: 1.75; display: flex; gap: 12px; }
-    .timeline-bullets li::before {
-      content: '';
-      display: block; width: 6px; height: 6px; border-radius: 50%;
-      background: var(--accent); flex-shrink: 0; margin-top: 9px;
-    }
-
-    .timeline-tags { display: flex; gap: 8px; flex-wrap: wrap; }
-
-    /* Education row — title in accent color */
-    .timeline-item.education .timeline-title { color: var(--accent); }
-
-    /* ============================================================
-       SECTION 4 — PROJECTS
-    ============================================================ */
-    .projects-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; }
-
+    /* Base card style — used for both clickable (a tag) and plain (div) */
     .project-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 36px;
-      display: flex; flex-direction: column; gap: 16px;
-      transition: box-shadow .3s, transform .3s, border-color .3s;
-      position: relative; overflow: hidden;
+      background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius);
+      padding:36px; display:flex; flex-direction:column; gap:16px;
+      transition:box-shadow .3s,transform .3s,border-color .3s;
+      position:relative; overflow:hidden;
     }
-    .project-card:hover { box-shadow: var(--shadow-hover); transform: translateY(-5px); border-color: rgba(0,86,152,.2); }
+    /* Clickable card — the whole card is a link */
+    a.project-card { display:flex; cursor:pointer; }
+    a.project-card:hover { box-shadow:var(--shadow-hover); transform:translateY(-5px); border-color:rgba(0,86,152,.2); }
+    div.project-card:hover { box-shadow:var(--shadow-hover); transform:translateY(-5px); border-color:rgba(0,86,152,.2); }
 
-    /* Large faint number in the background */
-    .project-num {
-      position: absolute; top: 16px; right: 20px;
-      font-family: var(--serif); font-size: 76px; font-weight: 300;
-      color: var(--border); line-height: 1; pointer-events: none;
-      transition: color .3s;
+    /* "Open report" indicator — shown on clickable cards */
+    .project-link-hint {
+      position:absolute; top:16px; right:16px;
+      font-size:11px; font-weight:500; letter-spacing:.06em;
+      color:var(--accent); background:var(--accent-lt);
+      padding:4px 10px; border-radius:99px;
+      opacity:0; transform:translateY(-4px);
+      transition:opacity .25s,transform .25s;
     }
-    .project-card:hover .project-num { color: var(--accent-lt); }
+    a.project-card:hover .project-link-hint { opacity:1; transform:none; }
 
-    .project-card h3 { font-family: var(--serif); font-size: 24px; font-weight: 400; line-height: 1.25; }
-    .project-card p { font-size: 13px; color: var(--muted); line-height: 1.85; flex: 1; }
+    .project-num { position:absolute; top:16px; right:20px; font-family:var(--serif); font-size:76px; font-weight:300; color:var(--border); line-height:1; pointer-events:none; transition:color .3s; }
+    .project-card:hover .project-num { color:var(--accent-lt); }
+    /* Hide the large number on clickable cards (replaced by link hint) */
+    a.project-card .project-num { display:none; }
 
-    .project-highlights { list-style: none; display: flex; flex-direction: column; gap: 9px; }
-    .project-highlights li { font-size: 13px; color: var(--muted); line-height: 1.7; display: flex; gap: 10px; }
-    .project-highlights li::before { content: '→'; color: var(--accent); flex-shrink: 0; font-size: 11px; margin-top: 2px; }
+    .project-card h3 { font-family:var(--serif); font-size:24px; font-weight:400; line-height:1.25; }
+    .project-card p { font-size:13px; color:var(--muted); line-height:1.85; flex:1; }
+    .project-highlights { list-style:none; display:flex; flex-direction:column; gap:9px; }
+    .project-highlights li { font-size:13px; color:var(--muted); line-height:1.7; display:flex; gap:10px; }
+    .project-highlights li::before { content:'→'; color:var(--accent); flex-shrink:0; font-size:11px; margin-top:2px; }
+    .project-footer { display:flex; align-items:center; justify-content:space-between; padding-top:16px; border-top:1px solid var(--border); flex-wrap:wrap; gap:10px; }
+    .project-meta { font-size:12px; color:var(--muted); }
+    .grade-pill { font-size:11px; font-weight:600; letter-spacing:.05em; color:var(--accent); background:var(--accent-lt); padding:5px 12px; border-radius:99px; }
 
-    .project-footer {
-      display: flex; align-items: center; justify-content: space-between;
-      padding-top: 16px; border-top: 1px solid var(--border); flex-wrap: wrap; gap: 10px;
-    }
-    .project-meta { font-size: 12px; color: var(--muted); }
-    .grade-pill {
-      font-size: 11px; font-weight: 600; letter-spacing: .05em;
-      color: var(--accent); background: var(--accent-lt);
-      padding: 5px 12px; border-radius: 99px;
-    }
+    /* Full-width featured card */
+    .project-card.featured { grid-column:span 2; display:grid; grid-template-columns:1fr 1fr; gap:48px; align-items:start; }
+    .project-card.featured .project-num { font-size:110px; top:20px; right:28px; }
+    .project-card.featured .project-body { display:flex; flex-direction:column; gap:16px; }
 
-    /* Full-width featured project card */
-    .project-card.featured {
-      grid-column: span 2;
-      display: grid; grid-template-columns: 1fr 1fr;
-      gap: 48px; align-items: start;
-    }
-    .project-card.featured .project-num { font-size: 110px; top: 20px; right: 28px; }
-    .project-card.featured .project-body { display: flex; flex-direction: column; gap: 16px; }
-
-    /* Green pulsing "ongoing" badge */
-    .ongoing-badge {
-      display: inline-flex; align-items: center; gap: 6px;
-      font-size: 10px; font-weight: 500; letter-spacing: .12em; text-transform: uppercase;
-      color: #16a34a; background: #dcfce7; padding: 4px 10px; border-radius: 99px;
-    }
-    .pulse-dot {
-      width: 6px; height: 6px; border-radius: 50%; background: #16a34a;
-      animation: pulse-anim 2s infinite;
-    }
-    @keyframes pulse-anim {
-      0%,100% { opacity: 1; transform: scale(1); }
-      50%      { opacity: .5; transform: scale(.75); }
-    }
+    /* Ongoing green badge */
+    .ongoing-badge { display:inline-flex; align-items:center; gap:6px; font-size:10px; font-weight:500; letter-spacing:.12em; text-transform:uppercase; color:#16a34a; background:#dcfce7; padding:4px 10px; border-radius:99px; }
+    .pulse-dot { width:6px; height:6px; border-radius:50%; background:#16a34a; animation:pulse-anim 2s infinite; }
+    @keyframes pulse-anim { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(.75)} }
 
     /* ============================================================
-       SECTION 5 — CERTIFICATIONS & SKILLS
+       SECTION 6 — CERTIFICATIONS & SKILLS
     ============================================================ */
-    .certs-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; }
-
-    .certs-col-title {
-      font-family: var(--serif); font-size: 22px; font-weight: 400;
-      margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid var(--border);
-    }
-
-    .cert-item {
-      display: flex; align-items: flex-start; gap: 18px;
-      padding: 20px; border: 1px solid var(--border); border-radius: var(--radius-sm);
-      background: var(--bg-card); margin-bottom: 14px;
-      transition: border-color .3s, box-shadow .3s, transform .3s;
-    }
-    .cert-item:hover { border-color: rgba(0,86,152,.25); box-shadow: var(--shadow); transform: translateX(5px); }
-
-    .cert-icon {
-      width: 44px; height: 44px; background: var(--accent-lt); border-radius: 50%;
-      display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 18px;
-    }
-    .cert-info h4 { font-family: var(--serif); font-size: 18px; font-weight: 400; margin-bottom: 3px; }
-    .cert-info p { font-size: 12px; color: var(--muted); line-height: 1.65; }
-
-    /* Skills section */
-    .skills-category { margin-bottom: 26px; }
-    .skills-cat-label {
-      font-size: 10px; font-weight: 500; letter-spacing: .2em; text-transform: uppercase;
-      color: var(--muted); margin-bottom: 12px; display: block;
-    }
-    .skills-pills { display: flex; flex-wrap: wrap; gap: 8px; }
-
-    .skill-pill {
-      font-size: 12px; font-weight: 400;
-      padding: 7px 16px; border-radius: 99px;
-      border: 1px solid var(--border); background: var(--bg-card); color: var(--text);
-      transition: background .2s, border-color .2s, color .2s, transform .2s;
-      cursor: default;
-    }
-    .skill-pill:hover { background: var(--accent-lt); border-color: var(--accent); color: var(--accent); transform: translateY(-2px); }
-
-    /* Blue-filled = advanced proficiency */
-    .skill-pill.advanced { background: var(--accent-lt); border-color: transparent; color: var(--accent); font-weight: 500; }
+    .certs-layout { display:grid; grid-template-columns:1fr 1fr; gap:56px; }
+    .certs-col-title { font-family:var(--serif); font-size:22px; font-weight:400; margin-bottom:24px; padding-bottom:16px; border-bottom:1px solid var(--border); }
+    .cert-item { display:flex; align-items:flex-start; gap:18px; padding:20px; border:1px solid var(--border); border-radius:var(--radius-sm); background:var(--bg-card); margin-bottom:14px; transition:border-color .3s,box-shadow .3s,transform .3s; }
+    .cert-item:hover { border-color:rgba(0,86,152,.25); box-shadow:var(--shadow); transform:translateX(5px); }
+    .cert-icon { width:44px; height:44px; background:var(--accent-lt); border-radius:50%; display:flex; align-items:center; justify-content:center; flex-shrink:0; font-size:18px; }
+    .cert-info h4 { font-family:var(--serif); font-size:18px; font-weight:400; margin-bottom:3px; }
+    .cert-info p { font-size:12px; color:var(--muted); line-height:1.65; }
+    .skills-category { margin-bottom:26px; }
+    .skills-cat-label { font-size:10px; font-weight:500; letter-spacing:.2em; text-transform:uppercase; color:var(--muted); margin-bottom:12px; display:block; }
+    .skills-pills { display:flex; flex-wrap:wrap; gap:8px; }
+    .skill-pill { font-size:12px; font-weight:400; padding:7px 16px; border-radius:99px; border:1px solid var(--border); background:var(--bg-card); color:var(--text); transition:background .2s,border-color .2s,color .2s,transform .2s; cursor:default; }
+    .skill-pill:hover { background:var(--accent-lt); border-color:var(--accent); color:var(--accent); transform:translateY(-2px); }
+    .skill-pill.advanced { background:var(--accent-lt); border-color:transparent; color:var(--accent); font-weight:500; }
 
     /* ============================================================
-       SECTION 6 — EXTRA-CURRICULARS
+       SECTION 7 — EXTRA-CURRICULARS
     ============================================================ */
-    .ec-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+    .ec-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:24px; }
+    .ec-card { background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius); padding:32px; transition:box-shadow .3s,transform .3s,border-color .3s; position:relative; overflow:hidden; }
+    .ec-card:hover { box-shadow:var(--shadow-hover); transform:translateY(-5px); border-color:rgba(0,86,152,.2); }
+    .ec-card::before { content:''; position:absolute; bottom:0; left:0; right:0; height:3px; background:linear-gradient(90deg,var(--accent),#4da6ff); transform:scaleX(0); transform-origin:left; transition:transform .35s ease; }
+    .ec-card:hover::before { transform:scaleX(1); }
+    .ec-emoji { font-size:28px; margin-bottom:16px; display:block; }
+    .ec-card h3 { font-family:var(--serif); font-size:20px; font-weight:400; margin-bottom:8px; line-height:1.3; }
+    .ec-role { font-size:10px; font-weight:500; letter-spacing:.14em; text-transform:uppercase; color:var(--accent); margin-bottom:14px; display:block; }
+    .ec-card p { font-size:13px; color:var(--muted); line-height:1.8; }
+    .ec-stat { margin-top:20px; padding-top:16px; border-top:1px solid var(--border); display:flex; align-items:baseline; gap:8px; }
+    .ec-stat-num { font-family:var(--serif); font-size:26px; font-weight:300; color:var(--accent); }
+    .ec-stat-label { font-size:11px; color:var(--muted); }
 
-    .ec-card {
-      background: var(--bg-card); border: 1px solid var(--border);
-      border-radius: var(--radius); padding: 32px;
-      transition: box-shadow .3s, transform .3s, border-color .3s;
-      position: relative; overflow: hidden;
-    }
-    .ec-card:hover { box-shadow: var(--shadow-hover); transform: translateY(-5px); border-color: rgba(0,86,152,.2); }
-    /* Animated blue bottom bar */
-    .ec-card::before {
-      content: '';
-      position: absolute; bottom: 0; left: 0; right: 0; height: 3px;
-      background: linear-gradient(90deg, var(--accent), #4da6ff);
-      transform: scaleX(0); transform-origin: left; transition: transform .35s ease;
-    }
-    .ec-card:hover::before { transform: scaleX(1); }
+    /* ── FOOTER ── */
+    footer { border-top:1px solid var(--border); padding:56px 0; background:var(--bg); }
+    .footer-inner { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:24px; }
+    .footer-name { font-family:var(--serif); font-size:26px; font-weight:300; }
+    .footer-name em { font-style:italic; color:var(--accent); }
+    .footer-links { display:flex; gap:28px; }
+    .footer-links a { font-size:12px; color:var(--muted); letter-spacing:.06em; transition:color .2s; }
+    .footer-links a:hover { color:var(--accent); }
+    .footer-copy { font-size:12px; color:var(--muted); }
 
-    .ec-emoji { font-size: 28px; margin-bottom: 16px; display: block; }
-    .ec-card h3 { font-family: var(--serif); font-size: 20px; font-weight: 400; margin-bottom: 8px; line-height: 1.3; }
-    .ec-role { font-size: 10px; font-weight: 500; letter-spacing: .14em; text-transform: uppercase; color: var(--accent); margin-bottom: 14px; display: block; }
-    .ec-card p { font-size: 13px; color: var(--muted); line-height: 1.8; }
-    .ec-stat {
-      margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--border);
-      display: flex; align-items: baseline; gap: 8px;
-    }
-    .ec-stat-num { font-family: var(--serif); font-size: 26px; font-weight: 300; color: var(--accent); }
-    .ec-stat-label { font-size: 11px; color: var(--muted); }
+    /* ── MOBILE NAV ── */
+    .mobile-nav { display:none; position:fixed; top:var(--nav-h); left:0; right:0; background:rgba(250,248,244,.97); backdrop-filter:blur(16px); border-bottom:1px solid var(--border); z-index:99; padding:24px 32px; flex-direction:column; gap:4px; }
+    .mobile-nav.open { display:flex; }
+    .mobile-nav a { font-size:14px; color:var(--text); padding:10px 0; border-bottom:1px solid var(--border); transition:color .2s; }
+    .mobile-nav a:hover { color:var(--accent); }
 
     /* ============================================================
-       FOOTER
+       RESPONSIVE
     ============================================================ */
-    footer { border-top: 1px solid var(--border); padding: 56px 0; background: var(--bg); }
-    .footer-inner { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 24px; }
-    .footer-name { font-family: var(--serif); font-size: 26px; font-weight: 300; }
-    .footer-name em { font-style: italic; color: var(--accent); }
-    .footer-links { display: flex; gap: 28px; }
-    .footer-links a { font-size: 12px; color: var(--muted); letter-spacing: .06em; transition: color .2s; }
-    .footer-links a:hover { color: var(--accent); }
-    .footer-copy { font-size: 12px; color: var(--muted); }
-
-    /* ============================================================
-       MOBILE NAV DROPDOWN
-    ============================================================ */
-    .mobile-nav {
-      display: none; position: fixed;
-      top: var(--nav-h); left: 0; right: 0;
-      background: rgba(250,248,244,.97); backdrop-filter: blur(16px);
-      border-bottom: 1px solid var(--border); z-index: 99;
-      padding: 24px 32px; flex-direction: column; gap: 4px;
+    @media (max-width:1000px) {
+      .container { padding:0 28px; }
+      .landing-grid { grid-template-columns:1fr; gap:56px; }
+      .photo-frame { max-width:300px; }
+      .about-strip { grid-template-columns:1fr; }
+      .timeline-item { grid-template-columns:1fr; gap:16px; }
+      .projects-grid { grid-template-columns:1fr; }
+      .project-card.featured { grid-column:span 1; grid-template-columns:1fr; }
+      .certs-layout { grid-template-columns:1fr; }
+      .ec-grid { grid-template-columns:1fr 1fr; }
+      .section-header { flex-direction:column; align-items:flex-start; }
+      .section-desc { text-align:left; }
+      .nav-links { display:none; }
+      .nav-hamburger { display:flex; }
+      .rec-card { flex:0 0 320px; }
     }
-    .mobile-nav.open { display: flex; }
-    .mobile-nav a { font-size: 14px; color: var(--text); padding: 10px 0; border-bottom: 1px solid var(--border); transition: color .2s; }
-    .mobile-nav a:hover { color: var(--accent); }
-
-    /* ============================================================
-       RESPONSIVE BREAKPOINTS
-    ============================================================ */
-    @media (max-width: 1000px) {
-      .container { padding: 0 28px; }
-      .landing-grid { grid-template-columns: 1fr; gap: 56px; }
-      .photo-frame { max-width: 300px; }
-      .about-strip { grid-template-columns: 1fr; }
-      .timeline-item { grid-template-columns: 1fr; gap: 16px; }
-      .projects-grid { grid-template-columns: 1fr; }
-      .project-card.featured { grid-column: span 1; grid-template-columns: 1fr; }
-      .certs-layout { grid-template-columns: 1fr; }
-      .ec-grid { grid-template-columns: 1fr 1fr; }
-      .section-header { flex-direction: column; align-items: flex-start; }
-      .section-desc { text-align: left; }
-      .nav-links { display: none; }
-      .nav-hamburger { display: flex; }
-    }
-    @media (max-width: 600px) {
-      .container { padding: 0 20px; }
-      .ec-grid { grid-template-columns: 1fr; }
-      .landing-cta { flex-direction: column; align-items: flex-start; }
-      .section { padding: 72px 0; }
-      .section-header { margin-bottom: 48px; }
+    @media (max-width:600px) {
+      .container { padding:0 20px; }
+      .ec-grid { grid-template-columns:1fr; }
+      .landing-cta { flex-direction:column; align-items:flex-start; }
+      .section { padding:72px 0; }
+      .section-header { margin-bottom:48px; }
+      .modal-card { padding:28px 24px; }
+      .rec-card { flex:0 0 280px; padding:24px; }
     }
   </style>
 </head>
 <body>
 
-  <!-- ── SCROLL PROGRESS BAR (top of page) ── -->
   <div id="progress-bar"></div>
 
-  <!-- ============================================================
-       NAVIGATION
-       EDIT: Change name and href links if you rename any sections.
-  ============================================================ -->
+  <!-- ── NAV ── -->
   <nav id="main-nav">
     <div class="nav-inner">
       <a href="#landing" class="nav-logo">Chanakya Naidu</a>
-
       <ul class="nav-links">
         <li><a href="#about">About</a></li>
+        <li><a href="#recommendations">Recommendations</a></li>
         <li><a href="#experience">Experience</a></li>
         <li><a href="#projects">Projects</a></li>
         <li><a href="#certifications">Expertise</a></li>
         <li><a href="#extracurriculars">Activities</a></li>
         <li><a href="assets/resume.pdf" target="_blank" class="nav-resume-btn">Resume</a></li>
       </ul>
-
-      <div class="nav-hamburger" id="hamburger">
-        <span></span><span></span><span></span>
-      </div>
+      <div class="nav-hamburger" id="hamburger"><span></span><span></span><span></span></div>
     </div>
   </nav>
 
-  <!-- Mobile dropdown menu -->
   <div class="mobile-nav" id="mobile-nav">
-    <a href="#about"            onclick="closeMobileNav()">About</a>
-    <a href="#experience"       onclick="closeMobileNav()">Experience</a>
-    <a href="#projects"         onclick="closeMobileNav()">Projects</a>
-    <a href="#certifications"   onclick="closeMobileNav()">Expertise</a>
-    <a href="#extracurriculars" onclick="closeMobileNav()">Activities</a>
-    <a href="assets/resume.pdf" target="_blank">View Resume ↗</a>
+    <a href="#about"             onclick="closeMobileNav()">About</a>
+    <a href="#recommendations"   onclick="closeMobileNav()">Recommendations</a>
+    <a href="#experience"        onclick="closeMobileNav()">Experience</a>
+    <a href="#projects"          onclick="closeMobileNav()">Projects</a>
+    <a href="#certifications"    onclick="closeMobileNav()">Expertise</a>
+    <a href="#extracurriculars"  onclick="closeMobileNav()">Activities</a>
+    <a href="assets/resume.pdf"  target="_blank">View Resume ↗</a>
   </div>
 
-
   <!-- ============================================================
-       SECTION 1 — LANDING / HERO
-       EDIT: Name, bio paragraph, your university details.
+       SECTION 1 — LANDING
   ============================================================ -->
   <section id="landing">
     <div class="container">
       <div class="landing-grid">
-
-        <!-- LEFT: Text content -->
         <div>
           <span class="eyebrow reveal">BBA · Mahindra University · Class of 2026</span>
-
-          <!-- EDIT: Your name -->
-          <h1 class="landing-name reveal reveal-d1">
-            Chanakya<br><em>Naidu</em>
-          </h1>
-
-          <!-- EDIT: Your one-paragraph bio -->
+          <h1 class="landing-name reveal reveal-d1">Chanakya<br><em>Naidu</em></h1>
           <p class="landing-bio reveal reveal-d2">
-            Business strategist, management consultant, and institution builder. 
-            From being a summer analyst at Goldman Sachs to founding Mahindra University's first consulting initiative, 
-            I work at the intersection of strategy, analytics, and design - driven by 
+            Business strategist, management consultant, and institution builder.
+            From Goldman Sachs to founding Mahindra University's first consulting club,
+            I work at the intersection of strategy, analytics, and design — driven by
             the belief that the best ideas deserve the best execution.
           </p>
-
           <div class="landing-cta reveal reveal-d3">
-            <!-- Opens resume in a new tab -->
             <a href="assets/resume.pdf" target="_blank" class="btn btn-solid">
               <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
               View Resume
             </a>
-            <!-- Downloads the resume file -->
             <a href="assets/resume.pdf" download class="btn btn-ghost">
               <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
               Download Resume
             </a>
-            <a href="https://linkedin.com/in/chanakya-naidu" target="_blank" class="btn btn-outline-blue">
-              LinkedIn ↗
-            </a>
+            <a href="https://linkedin.com/in/chanakya-naidu" target="_blank" class="btn btn-outline-blue">LinkedIn ↗</a>
           </div>
-
-          <!-- Quick-jump links to each section -->
           <div class="landing-quick-links reveal reveal-d4">
-            <a href="#about"            class="quick-link">About <span class="ql-arrow">↗</span></a>
-            <a href="#experience"       class="quick-link">Experience <span class="ql-arrow">↗</span></a>
-            <a href="#projects"         class="quick-link">Projects <span class="ql-arrow">↗</span></a>
-            <a href="#certifications"   class="quick-link">Expertise <span class="ql-arrow">↗</span></a>
-            <a href="#extracurriculars" class="quick-link">Activities <span class="ql-arrow">↗</span></a>
+            <a href="#about"             class="quick-link">About <span class="ql-arrow">↗</span></a>
+            <a href="#experience"        class="quick-link">Experience <span class="ql-arrow">↗</span></a>
+            <a href="#projects"          class="quick-link">Projects <span class="ql-arrow">↗</span></a>
+            <a href="#certifications"    class="quick-link">Expertise <span class="ql-arrow">↗</span></a>
+            <a href="#extracurriculars"  class="quick-link">Activities <span class="ql-arrow">↗</span></a>
           </div>
         </div>
 
-        <!-- RIGHT: Photo -->
         <div class="photo-frame reveal reveal-d2">
           <!--
             HOW TO ADD YOUR PHOTO:
-            1. Save your photo as "photo.jpg" in the "assets" folder
-            2. Delete the entire <div class="photo-placeholder"> block below
-            3. Uncomment the img tag (remove the HTML comment marks):
-               <img src="assets/photo.jpg" alt="Chanakya Naidu" />
+            1. Save your photo as "photo.jpg" inside the assets/ folder
+            2. Delete the photo-placeholder div below
+            3. Uncomment this line:  <img src="assets/photo.jpg" alt="Chanakya Naidu" />
           -->
-          <img src="assets/photo.jpg" alt="Chanakya Naidu" />
-
-          <!-- Floating GPA badge -->
+          <div class="photo-placeholder">
+            <svg width="40" height="40" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1" opacity=".35"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+            Add photo.jpg to assets/
+          </div>
           <div class="photo-badge">
             <div class="photo-badge-icon">🎓</div>
             <div class="photo-badge-text">
-              <strong>GPA 9.3</strong>
+              <strong>GPA 9.3 / 10</strong>
               <span>Mahindra University</span>
             </div>
           </div>
         </div>
-
       </div>
     </div>
   </section>
@@ -858,7 +617,6 @@
 
   <!-- ============================================================
        SECTION 2 — ABOUT ME
-       Resume view/download, video intro, LinkedIn tile
   ============================================================ -->
   <section id="about" class="section">
     <div class="container">
@@ -869,62 +627,52 @@
         </div>
         <p class="section-desc">My resume, a short video introduction, and a direct link to my professional profile.</p>
       </div>
-
       <div class="about-strip">
 
-        <!-- Tile 1: Resume -->
         <div class="about-tile reveal">
           <div class="tile-icon">
-            <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-              <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414A1 1 0 0121 9.414V19a2 2 0 01-2 2z"/>
-            </svg>
+            <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414A1 1 0 0121 9.414V19a2 2 0 01-2 2z"/></svg>
           </div>
           <h3>Resume</h3>
-          <p>My full resume covering academic credentials, corporate expreince, live consulting projects, technical skills, and leadership.</p>
+          <p>My full resume covering academic credentials, Goldman Sachs experience, consulting projects, technical skills, and leadership roles.</p>
           <div class="tile-actions">
             <a href="assets/resume.pdf" target="_blank" class="btn btn-solid" style="font-size:11px;padding:10px 20px;">
-              <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-              View
+              <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>View
             </a>
             <a href="assets/resume.pdf" download class="btn btn-ghost" style="font-size:11px;padding:10px 20px;">
-              <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
-              Download
+              <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>Download
             </a>
           </div>
         </div>
 
-        <!-- Tile 2: Video intro -->
         <div class="about-tile reveal reveal-d1">
           <div class="tile-icon">
-            <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-              <path d="M15 10l4.553-2.069A1 1 0 0121 8.82v6.36a1 1 0 01-1.447.89L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
-            </svg>
+            <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path d="M15 10l4.553-2.069A1 1 0 0121 8.82v6.36a1 1 0 01-1.447.89L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
           </div>
           <h3>Video Introduction</h3>
-          <p>A short introduction to who I am, what drives me, and what I hope to build.</p>
+          <p>A short 2-minute introduction — who I am, what drives me, and what I hope to build.</p>
           <!--
             HOW TO ADD VIDEO:
-            1. Upload your video to YouTube (can be "Unlisted" — no one sees it unless they have the link)
-            2. On YouTube: Share → Embed → copy only the ID after "youtube.com/embed/"
-            3. Replace YOUR_VIDEO_ID below with that ID
-            4. Delete the placeholder div and uncomment the iframe line
+            1. Upload video to YouTube (can be "Unlisted" — private link)
+            2. On YouTube: Share → Embed → copy the URL that contains "youtube.com/embed/"
+            3. Replace YOUR_VIDEO_ID in the iframe src below with just the video ID
+            4. Delete the placeholder div and uncomment the iframe
           -->
-         <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ?si=YP0mcxAY9z4ZTquS" allowfullscreen style="width:100%;aspect-ratio:16/9;border-radius:var(--radius-sm);border:none;display:block;margin-top:8px;"></iframe>
+          <div style="aspect-ratio:16/9;background:var(--bg-subtle);border-radius:var(--radius-sm);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:13px;gap:10px;margin-top:auto;">
+            <svg width="28" height="28" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1" opacity=".45"><path d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/><path d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            Paste YouTube embed URL here
+          </div>
+          <!-- <iframe src="https://www.youtube.com/embed/YOUR_VIDEO_ID" allowfullscreen style="width:100%;aspect-ratio:16/9;border-radius:var(--radius-sm);border:none;display:block;margin-top:8px;"></iframe> -->
         </div>
 
-        <!-- Tile 3: LinkedIn -->
         <div class="about-tile reveal reveal-d2">
           <div class="tile-icon">
-            <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-              <path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-4 0v7h-4v-7a6 6 0 016-6zM2 9h4v12H2z"/><circle cx="4" cy="4" r="2"/>
-            </svg>
+            <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-4 0v7h-4v-7a6 6 0 016-6zM2 9h4v12H2z"/><circle cx="4" cy="4" r="2"/></svg>
           </div>
           <h3>LinkedIn</h3>
-          <p>Connect with me professionally.</p>
+          <p>Connect with me professionally — view endorsements, recommendations, and my full professional presence.</p>
           <div class="tile-actions">
-            <a href="https://linkedin.com/in/chanakya-naidu" target="_blank" class="btn btn-solid" style="font-size:11px;padding:10px 20px;">
-              View Profile ↗
-            </a>
+            <a href="https://linkedin.com/in/chanakya-naidu" target="_blank" class="btn btn-solid" style="font-size:11px;padding:10px 20px;">View Profile ↗</a>
           </div>
         </div>
 
@@ -935,17 +683,160 @@
 
 
   <!-- ============================================================
-       SECTION 3 — CAREER TIMELINE
-       EDIT: Each .timeline-item is one role. Copy/paste to add more.
-       LOGOS: Save as gs-logo.png, mcg-logo.png, roots-logo.png,
-              pinnacle-logo.png in the assets/ folder.
-              If the image file is missing, initials show instead.
+       SECTION 3 — RECOMMENDATIONS (NEW)
+
+       HOW TO EDIT EACH CARD:
+       - rec-text: paste the recommendation text
+       - rec-photo img src: save professor photo as assets/prof-1.jpg etc.
+                            If no photo, just delete the <img> line — initials show automatically
+       - rec-name / rec-title-text: professor name and title
+       - rec-li-link href: paste the direct LinkedIn recommendation URL
+                           If no LinkedIn link, delete the entire <a class="rec-li-link"> line
+
+       HOW TO ADD A 5TH CARD:
+       Copy the entire <!-- REC CARD --> block and paste it at the end of rec-track
+  ============================================================ -->
+  <section id="recommendations" class="section" style="padding-bottom:80px;">
+    <div class="container">
+      <div class="section-header reveal">
+        <div>
+          <span class="eyebrow">03 — Recommendations</span>
+          <h2 class="section-title">What Others <em>Say</em></h2>
+        </div>
+        <p class="section-desc">Scroll to read what my professors have to say. Three are directly linked to LinkedIn recommendations.</p>
+      </div>
+
+      <div class="rec-scroll-wrapper reveal">
+        <div class="rec-track" id="rec-track">
+
+          <!-- ── REC CARD 1 ── -->
+          <div class="rec-card">
+            <span class="rec-quote-mark">"</span>
+            <!--
+              EDIT: Paste the recommendation text below.
+              It can be 2–8 lines — the card adjusts height automatically.
+            -->
+            <p class="rec-text">
+              Chanakya is one of the most intellectually driven students I have encountered in my years of teaching. His ability to synthesize complex research frameworks and translate them into actionable insights is rare at the undergraduate level. His work on the Industry 5.0 readiness study demonstrated not just academic rigor, but genuine curiosity and a practitioner's mindset.
+            </p>
+            <div class="rec-person">
+              <!--
+                EDIT PHOTO: Save as assets/prof-1.jpg
+                If no photo available, delete the <img> line below.
+                The initials in rec-photo-initials will show instead.
+              -->
+              <div class="rec-photo">
+                <img src="assets/prof-1.jpg" alt="Professor"
+                  onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" />
+                <span class="rec-photo-initials" style="display:none;">DC</span>
+              </div>
+              <div class="rec-meta">
+                <!-- EDIT: Professor name -->
+                <p class="rec-name">Dr. Debopam Chakraborty</p>
+                <!-- EDIT: Their title and department -->
+                <p class="rec-title-text">Associate Professor · Mahindra University</p>
+                <!--
+                  EDIT: Paste the direct URL to the LinkedIn recommendation.
+                  On LinkedIn: go to your profile → Recommendations section → click the recommendation →
+                  copy the URL from your browser address bar.
+                  If NOT on LinkedIn, delete this entire <a> line.
+                -->
+                <a href="https://www.linkedin.com/in/chanakya-naidu/#recommendations" target="_blank" class="rec-li-link">
+                  View on LinkedIn ↗
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <!-- ── REC CARD 2 ── -->
+          <div class="rec-card">
+            <span class="rec-quote-mark">"</span>
+            <p class="rec-text">
+              I have rarely seen a student manage the dual demands of academic excellence and institution building as effectively as Chanakya. Founding and running MUMCG while maintaining a 9.3 GPA and delivering top-quality consulting work for real clients speaks to an extraordinary level of personal discipline and leadership maturity.
+            </p>
+            <div class="rec-person">
+              <div class="rec-photo">
+                <img src="assets/prof-2.jpg" alt="Professor"
+                  onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" />
+                <span class="rec-photo-initials" style="display:none;">PR</span>
+              </div>
+              <div class="rec-meta">
+                <p class="rec-name">Prof. [Name]</p>
+                <p class="rec-title-text">Professor · Mahindra University</p>
+                <a href="https://www.linkedin.com/in/chanakya-naidu/#recommendations" target="_blank" class="rec-li-link">
+                  View on LinkedIn ↗
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <!-- ── REC CARD 3 ── -->
+          <div class="rec-card">
+            <span class="rec-quote-mark">"</span>
+            <p class="rec-text">
+              Chanakya consistently demonstrated an ability to think strategically and communicate with clarity far beyond his years. In our Management Consulting coursework, he delivered a project for SAP India that was indistinguishable in quality from professional consulting outputs. He is exactly the kind of student who makes teaching rewarding.
+            </p>
+            <div class="rec-person">
+              <div class="rec-photo">
+                <img src="assets/prof-3.jpg" alt="Professor"
+                  onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" />
+                <span class="rec-photo-initials" style="display:none;">SM</span>
+              </div>
+              <div class="rec-meta">
+                <p class="rec-name">Prof. [Name]</p>
+                <p class="rec-title-text">Professor · Mahindra University</p>
+                <a href="https://www.linkedin.com/in/chanakya-naidu/#recommendations" target="_blank" class="rec-li-link">
+                  View on LinkedIn ↗
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <!-- ── REC CARD 4 (no LinkedIn link) ── -->
+          <div class="rec-card">
+            <span class="rec-quote-mark">"</span>
+            <p class="rec-text">
+              What distinguishes Chanakya is his rare combination of analytical depth and creative communication. His research on sleep deprivation and academic performance was selected as the best submission in a cohort of 400 students — not merely for its statistical rigor, but for the clarity and impact of how the findings were presented to the faculty panel.
+            </p>
+            <div class="rec-person">
+              <div class="rec-photo">
+                <img src="assets/prof-4.jpg" alt="Professor"
+                  onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" />
+                <span class="rec-photo-initials" style="display:none;">PF</span>
+              </div>
+              <div class="rec-meta">
+                <p class="rec-name">Prof. [Name]</p>
+                <p class="rec-title-text">Professor · Mahindra University</p>
+                <!-- No LinkedIn link for this card — line intentionally removed -->
+              </div>
+            </div>
+          </div>
+
+        </div><!-- /rec-track -->
+
+        <!-- Arrow navigation buttons -->
+        <div class="rec-nav">
+          <button class="rec-nav-btn" id="rec-prev" aria-label="Previous">
+            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M15 19l-7-7 7-7"/></svg>
+          </button>
+          <button class="rec-nav-btn" id="rec-next" aria-label="Next">
+            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M9 5l7 7-7 7"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+  <hr class="section-divider" />
+
+
+  <!-- ============================================================
+       SECTION 4 — CAREER TIMELINE
   ============================================================ -->
   <section id="experience" class="section">
     <div class="container">
       <div class="section-header reveal">
         <div>
-          <span class="eyebrow">03 — Experience</span>
+          <span class="eyebrow">04 — Experience</span>
           <h2 class="section-title">Where I've <em>Worked</em></h2>
         </div>
         <p class="section-desc">Internships, leadership roles, and institutional initiatives that shaped how I think and operate.</p>
@@ -953,16 +844,10 @@
 
       <div class="timeline">
 
-        <!-- ── Goldman Sachs ── -->
         <div class="timeline-item reveal">
           <div class="timeline-left">
-            <!--
-              Logo: save your Goldman Sachs logo as "gs-logo.png" in assets/
-              The onerror attribute hides the image and shows initials if the file is missing.
-            -->
             <div class="timeline-logo">
-              <img src="assets/gs-logo.png" alt="Goldman Sachs"
-                onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" />
+              <img src="assets/gs-logo.png" alt="Goldman Sachs" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" />
               <span class="timeline-logo-fallback" style="display:none;">GS</span>
             </div>
             <p class="timeline-date">Jun '25 – Aug '25</p>
@@ -977,21 +862,14 @@
               <li>Delivered strategic documentation and cross-department alignment for data migration protocols.</li>
               <li>Gained firsthand exposure to investment banking operations, business analytics, and enterprise-scale digital project management.</li>
             </ul>
-            <div class="timeline-tags">
-              <span class="tag">Regulatory Reporting</span>
-              <span class="tag">Tech Migration</span>
-              <span class="tag">Business Analytics</span>
-              <span class="tag">IB Operations</span>
-            </div>
+            <div class="timeline-tags"><span class="tag">Regulatory Reporting</span><span class="tag">Tech Migration</span><span class="tag">Business Analytics</span><span class="tag">IB Operations</span></div>
           </div>
         </div>
 
-        <!-- ── MUMCG — Founder & Consulting Director ── -->
         <div class="timeline-item reveal">
           <div class="timeline-left">
             <div class="timeline-logo">
-              <img src="assets/mcg-logo.png" alt="MUMCG"
-                onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" />
+              <img src="assets/mcg-logo.png" alt="MUMCG" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" />
               <span class="timeline-logo-fallback" style="display:none;">MCG</span>
             </div>
             <p class="timeline-date">Nov '24 – Present</p>
@@ -1007,21 +885,14 @@
               <li>Designed networking events, SME seminars, and case competitions — engaging 200+ participants across disciplines.</li>
               <li>Structured MUMCG's service delivery model and internal knowledge repository for quality and scalability.</li>
             </ul>
-            <div class="timeline-tags">
-              <span class="tag">Strategy Consulting</span>
-              <span class="tag">Team of 120+</span>
-              <span class="tag">Client Acquisition</span>
-              <span class="tag">Institutional Building</span>
-            </div>
+            <div class="timeline-tags"><span class="tag">Strategy Consulting</span><span class="tag">Team of 120+</span><span class="tag">Client Acquisition</span><span class="tag">Institutional Building</span></div>
           </div>
         </div>
 
-        <!-- ── ROOTS Festival ── -->
         <div class="timeline-item reveal">
           <div class="timeline-left">
             <div class="timeline-logo">
-              <img src="assets/roots-logo.png" alt="ROOTS Festival"
-                onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" />
+              <img src="assets/roots-logo.png" alt="ROOTS" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" />
               <span class="timeline-logo-fallback" style="display:none;">🌿</span>
             </div>
             <p class="timeline-date">Jun '25 – Nov '25</p>
@@ -1029,27 +900,20 @@
           </div>
           <div class="timeline-right">
             <h3 class="timeline-title">Head of Programming & Marketing</h3>
-            <p class="timeline-org">ROOTS Festival · Mahindra & Mahindra Group</p>
+            <p class="timeline-org">ROOTS Festival · Mahindra & Mahindra Group / Mahindra University</p>
             <ul class="timeline-bullets">
               <li>Led campus-wide marketing for the inaugural edition of the Mahindra & Mahindra Group's ROOTS Festival.</li>
               <li>Created, organised, and executed end-to-end events across four days spanning internal and external artists and acts.</li>
-              <li>Owned finance, event logistics, procurement, vendor contacts, security, and sponsorship-based financing from first contact to final execution.</li>
+              <li>Owned finance, logistics, procurement, vendor contacts, security, and sponsorship-based financing end-to-end.</li>
             </ul>
-            <div class="timeline-tags">
-              <span class="tag">Event Production</span>
-              <span class="tag">Financial Modelling</span>
-              <span class="tag">Sponsorship</span>
-              <span class="tag">Vendor Management</span>
-            </div>
+            <div class="timeline-tags"><span class="tag">Event Production</span><span class="tag">Financial Modelling</span><span class="tag">Sponsorship</span><span class="tag">Vendor Management</span></div>
           </div>
         </div>
 
-        <!-- ── Pinnacle Perspectives ── -->
         <div class="timeline-item reveal">
           <div class="timeline-left">
             <div class="timeline-logo">
-              <img src="assets/pinnacle-logo.png" alt="Pinnacle Perspectives"
-                onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" />
+              <img src="assets/pinnacle-logo.png" alt="Pinnacle" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" />
               <span class="timeline-logo-fallback" style="display:none;">PP</span>
             </div>
             <p class="timeline-date">Aug '25 – Present</p>
@@ -1059,22 +923,33 @@
             <h3 class="timeline-title">Lead Organiser</h3>
             <p class="timeline-org">Pinnacle Perspectives · Mahindra University Monthly Speaker Seminar</p>
             <ul class="timeline-bullets">
-              <li>Manages end-to-end curation of Mahindra University's monthly speaker seminar — hosting national and global leaders including Arindam Banerjee (Asia Head, State Street), Muralikrishnan B (Ex-President, Xiaomi India), and Anjali Merchant (Epigamia).</li>
+              <li>Manages end-to-end curation of Mahindra University's monthly speaker seminar — hosting leaders including Arindam Banerjee (Asia Head, State Street), Muralikrishnan B (Ex-President, Xiaomi India), and Anjali Merchant (Epigamia).</li>
               <li>Leads event strategy, speaker engagement, and audience development — attracting 500+ unique attendees university-wide.</li>
-              <li>Collaborated with administration and external partners to institutionalise the series as a flagship recurring event.</li>
+              <li>Collaborates with administration and external partners to institutionalise the series as a flagship recurring event.</li>
             </ul>
-            <div class="timeline-tags">
-              <span class="tag">Speaker Curation</span>
-              <span class="tag">500+ Attendees</span>
-              <span class="tag">Event Strategy</span>
-            </div>
+            <div class="timeline-tags"><span class="tag">Speaker Curation</span><span class="tag">500+ Attendees</span><span class="tag">Event Strategy</span></div>
           </div>
         </div>
 
-        
-        
-      
-        <!-- ── Education ── -->
+        <div class="timeline-item reveal">
+          <div class="timeline-left">
+            <div class="timeline-logo" style="background:var(--bg-subtle);">
+              <span class="timeline-logo-fallback">📰</span>
+            </div>
+            <p class="timeline-date">Sep '24 – Aug '25</p>
+            <span class="timeline-badge">Editorial</span>
+          </div>
+          <div class="timeline-right">
+            <h3 class="timeline-title">Opinion Forum Editor</h3>
+            <p class="timeline-org">The Echo · Mahindra University Newspaper</p>
+            <ul class="timeline-bullets">
+              <li>Edited and authored multiple published articles for the university's official newspaper across opinion, commentary, and analysis formats.</li>
+              <li>Shaped editorial direction of the Opinion Forum — curating student voices on business, policy, and campus affairs.</li>
+            </ul>
+            <div class="timeline-tags"><span class="tag">Editorial</span><span class="tag">Opinion Writing</span><span class="tag">Content Strategy</span></div>
+          </div>
+        </div>
+
         <div class="timeline-item education reveal">
           <div class="timeline-left">
             <div class="timeline-logo" style="background:var(--accent-lt);">
@@ -1087,41 +962,81 @@
             <h3 class="timeline-title">Bachelor of Business Administration</h3>
             <p class="timeline-org">Mahindra University · Hyderabad, India</p>
             <ul class="timeline-bullets">
-              <li>Current GPA: <strong>9.3 / 10</strong> as of Semester 5 — consistently among top-performing students in the program.</li>
-              <li>Coursework spans Financial Markets, Management Consulting, Digital Marketing, Data Analytics, UI/UX Design, ERM, and Strategy.</li>
+              <li>Current GPA: <strong>9.3 / 10</strong> as of Semester 5 — consistently among top-performing students.</li>
+              <li>Coursework spanning Financial Markets, Management Consulting, Digital Marketing, Data Analytics, UI/UX Design, ERM, and Strategy.</li>
+              <li>Top 3 percentile globally in the Marketplace Simulations entrepreneurship simulation.</li>
             </ul>
-            <div class="timeline-tags">
-              <span class="tag">GPA 9.3 / 10</span>
-              <span class="tag">Finance · Strategy · Analytics</span>
-            </div>
+            <div class="timeline-tags"><span class="tag">GPA 9.3 / 10</span><span class="tag">Top 3% Worldwide</span><span class="tag">Finance · Strategy · Analytics</span></div>
           </div>
         </div>
 
-
-      </div><!-- /timeline -->
+      </div>
     </div>
   </section>
+
+
+  <!-- ============================================================
+       GRADES TICKER BAR
+       Click anywhere on the blue bar to open the full grades table.
+
+       HOW TO SET UP YOUR GRADES:
+       Scroll down to the <script> section at the bottom of this file.
+       Find the section labelled "GRADES DATA — EDIT THIS".
+       Fill in your real grades in the array there.
+       The ticker and modal table will update automatically.
+  ============================================================ -->
+  <div class="ticker-wrap" id="grades-ticker" role="button" aria-label="Click to view full academic record">
+    <!-- The ticker-inner div is built by JavaScript using your grades data below -->
+    <div class="ticker-inner" id="ticker-inner"></div>
+    <span class="ticker-click-hint">Click to view full record ↗</span>
+  </div>
+
+
+  <!-- ============================================================
+       GRADES MODAL POPUP
+       Appears when the ticker is clicked. Closed with the × button
+       or by clicking the dark backdrop behind the card.
+  ============================================================ -->
+  <div class="modal-overlay" id="grades-modal">
+    <div class="modal-card">
+      <button class="modal-close" id="modal-close">×</button>
+      <h3 class="modal-title">Academic <em>Record</em></h3>
+      <p class="modal-sub">Mahindra University · BBA · 2023–2026</p>
+      <!-- Table is built by JavaScript using your grades data -->
+      <div id="modal-table-container"></div>
+      <div class="modal-gpa">
+        <span class="modal-gpa-label">Cumulative GPA</span>
+        <span class="modal-gpa-value">9.3 / 10</span>
+      </div>
+    </div>
+  </div>
   <hr class="section-divider" />
 
 
   <!-- ============================================================
-       SECTION 4 — PROJECTS & RESEARCH
-       EDIT: Each .project-card is one project. The "featured" card
-       spans full width — keep this for your most important project.
+       SECTION 5 — PROJECTS
+
+       HYPERLINKED CARDS: OG & Co., Sleep Research, and Airbus
+       are wrapped in <a> tags — the whole card is clickable.
+       Save the PDFs as:
+         assets/ogco-report.pdf
+         assets/sleep-report.pdf
+         assets/airbus-report.pdf
+       and they'll open in a new tab when clicked.
   ============================================================ -->
   <section id="projects" class="section">
     <div class="container">
       <div class="section-header reveal">
         <div>
-          <span class="eyebrow">04 — Projects & Research</span>
+          <span class="eyebrow">05 — Projects & Research</span>
           <h2 class="section-title">Work I'm <em>Proud Of</em></h2>
         </div>
-        <p class="section-desc">Live consulting engagements, independent research, and applied projects across strategy, marketing, and analytics.</p>
+        <p class="section-desc">Live consulting engagements, independent research, and applied projects. Cards with a link open the full report.</p>
       </div>
 
       <div class="projects-grid">
 
-        <!-- ── Capstone: Hyderabad Metro (featured, full-width) ── -->
+        <!-- ── Capstone: Hyderabad Metro (featured full-width) ── -->
         <div class="project-card featured reveal">
           <div>
             <span class="project-num">01</span>
@@ -1129,12 +1044,10 @@
               <span class="tag tag-blue">Capstone Project</span>
               <span class="ongoing-badge"><span class="pulse-dot"></span>Ongoing</span>
             </div>
-            <h3 style="font-family:var(--serif);font-size:30px;font-weight:300;line-height:1.2;">
-              General Accessibility Review<br>of the Hyderabad Metro System
-            </h3>
+            <h3 style="font-family:var(--serif);font-size:30px;font-weight:300;line-height:1.2;">General Accessibility Review<br>of the Hyderabad Metro System</h3>
           </div>
           <div class="project-body">
-            <p>Conducting an end-to-end accessibility audit of Hyderabad's metro infrastructure — evaluating physical, sensory, and informational barriers faced by persons with disabilities and the elderly. The project synthesises field observations, stakeholder interviews, and policy benchmarking to deliver actionable recommendations for HMRL.</p>
+            <p>Conducting an end-to-end accessibility audit of Hyderabad's metro infrastructure — evaluating physical, sensory, and informational barriers faced by persons with disabilities and the elderly. Synthesising field observations, stakeholder interviews, and policy benchmarking to deliver actionable recommendations for HMRL.</p>
             <ul class="project-highlights">
               <li>Ongoing field-based qualitative and quantitative data collection across metro stations</li>
               <li>Benchmarking against international accessibility standards (ADA, UNCRPD)</li>
@@ -1154,7 +1067,7 @@
           <ul class="project-highlights">
             <li>Analysed continuous viability of SAP India's cloud-based ERP suite for long-term strategic planning.</li>
             <li>Conducted ground-level primary data collection on SAP's clients and pipeline leads.</li>
-            <li>Delivered comprehensive management recommendations on sustaining value propositions for SAP's Cloud Solutions Suite.</li>
+            <li>Delivered comprehensive management recommendations on sustaining SAP's Cloud Solutions value propositions.</li>
           </ul>
           <div class="project-footer">
             <span class="project-meta">Advisory · via MUMCG · 2025</span>
@@ -1167,8 +1080,8 @@
           <div><span class="tag tag-blue">Digital Marketing · 2025</span></div>
           <h3>Regalia by Reyney — Digital Growth</h3>
           <ul class="project-highlights">
-            <li>Executed a full-scale SEO, SEM, and Google Ads campaign — improved lead conversion rate ~100% and website engagement ~263% within two months.</li>
-            <li>Redesigned the brand website (UI/UX + SEM + SEO) for optimised funnel performance and customer experience.</li>
+            <li>Executed full-scale SEO, SEM, and Google Ads campaign — improved lead conversion ~100% and website engagement ~263% within two months.</li>
+            <li>Redesigned the brand website (UI/UX + SEM + SEO) for optimised funnel performance and CX.</li>
             <li>Increased ad revenue generation by ~130%.</li>
           </ul>
           <div class="project-footer">
@@ -1177,7 +1090,7 @@
           </div>
         </div>
 
-        <!-- ── Industry 5.0 Research ── -->
+        <!-- ── Industry 5.0 (Ongoing) ── -->
         <div class="project-card reveal">
           <span class="project-num">04</span>
           <div style="display:flex;gap:8px;flex-wrap:wrap;">
@@ -1186,8 +1099,8 @@
           </div>
           <h3>Industry 5.0 Readiness in Indian MSMEs</h3>
           <ul class="project-highlights">
-            <li>Conducting a comprehensive study under Dr. Debopam Chakraborty assessing Indian MSMEs' readiness for Industry 5.0.</li>
-            <li>Synthesising qualitative and quantitative findings into a research paper highlighting policy and adoption gaps.</li>
+            <li>Conducting a comprehensive study under Dr. Debopam Chakraborty assessing Indian MSMEs' technological readiness for Industry 5.0.</li>
+            <li>Synthesising qualitative and quantitative findings highlighting policy and adoption gaps.</li>
             <li>Building a framework matrix to assess Industry 5.0 readiness across MSME segments.</li>
           </ul>
           <div class="project-footer">
@@ -1195,37 +1108,100 @@
           </div>
         </div>
 
-        <!-- ── OG & Co. ── -->
+        <!-- ── Krishivaas by Agribridge ── -->
         <div class="project-card reveal reveal-d1">
           <span class="project-num">05</span>
+          <div><span class="tag tag-blue">Strategy Consulting · 2025</span></div>
+          <h3>Krishivaas by Agribridge — Revenue Expansion</h3>
+          <ul class="project-highlights">
+            <li>Led a strategic expansion consulting engagement to identify additional revenue stream opportunities for Krishivaas, an agri-hospitality venture by Agribridge.</li>
+            <li>Conducted market mapping, competitive analysis, and consumer insight generation to uncover high-potential adjacencies.</li>
+            <li>Delivered a structured revenue diversification framework with prioritised recommendations for execution.</li>
+          </ul>
+          <div class="project-footer">
+            <span class="project-meta">Advisory · via MUMCG · 2025</span>
+          </div>
+        </div>
+
+        <!-- ── KPMG Risk Register (Ongoing) ── -->
+        <div class="project-card reveal">
+          <span class="project-num">06</span>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <span class="tag tag-blue">Risk Management · 2025–26</span>
+            <span class="ongoing-badge"><span class="pulse-dot"></span>Ongoing</span>
+          </div>
+          <h3>KPMG × IRM — Risk Register 2026: Corporate India</h3>
+          <ul class="project-highlights">
+            <li>Building an end-to-end Risk Register outlining risks for Corporate India across Financial Services, Government/Public Sector, Telecom, and Aviation.</li>
+            <li>Scoring risks on likelihood and impact, with start-to-end mitigation strategies across a ~400-point deliverable.</li>
+            <li>Conducted in partnership with the Institute of Risk Management (IRM).</li>
+          </ul>
+          <div class="project-footer">
+            <span class="project-meta">KPMG × IRM · Risk Report 2026</span>
+          </div>
+        </div>
+
+        <!--
+          ── OG & Co. (HYPERLINKED — whole card opens the report)
+          EDIT: Save your report as assets/ogco-report.pdf
+          The "Open Report ↗" hint appears on hover automatically.
+        -->
+        <a class="project-card reveal reveal-d1" href="assets/ogco-report.pdf" target="_blank">
+          <span class="project-link-hint">Open Report ↗</span>
           <div><span class="tag tag-blue">Strategy Consulting · 2024</span></div>
           <h3>OG & Co. — Premium Fashion Strategy</h3>
           <ul class="project-highlights">
             <li>Created market entry strategies for new geographies; refined target market and STP framework.</li>
-            <li>Delivered recommendations on backwards supply chain optimisation and sourcing efficiency.</li>
-            <li>Built a go-to-market framework combining storytelling-led brand communication and influencer activation for millennial luxury buyers.</li>
+            <li>Delivered recommendations on backward supply chain optimisation and sourcing efficiency.</li>
+            <li>Built a GTM framework combining storytelling-led brand communication and influencer activation for millennial luxury buyers.</li>
           </ul>
           <div class="project-footer">
             <span class="project-meta">Advisory Strategy · 2024</span>
-            <a href="#" class="grade-pill" style="cursor:pointer;">View Summary ↗</a>
           </div>
-        </div>
+        </a>
 
-        <!-- ── Sleep Research ── -->
-        <div class="project-card reveal">
-          <span class="project-num">06</span>
+        <!--
+          ── Sleep Research (HYPERLINKED)
+          EDIT: Save report as assets/sleep-report.pdf
+        -->
+        <a class="project-card reveal" href="assets/sleep-report.pdf" target="_blank">
+          <span class="project-link-hint">Open Report ↗</span>
           <div><span class="tag tag-blue">Research · Best in Cohort</span></div>
           <h3>Sleep Deprivation & Academic Performance</h3>
           <ul class="project-highlights">
             <li>Led a study selected as best by faculty among ~400 students.</li>
             <li>Designed survey instrument and performed multi-variable regression analysis on academic outcomes.</li>
-            <li>Presented behavioral insights and institutional recommendations to a faculty review panel.</li>
+            <li>Presented behavioural insights and institutional recommendations to a faculty review panel.</li>
           </ul>
           <div class="project-footer">
             <span class="project-meta">Research Techniques · MU</span>
             <span class="grade-pill">🏆 Best in Cohort</span>
           </div>
-        </div>
+        </a>
+
+        <!--
+          ── Airbus Risk Report (HYPERLINKED, full-width)
+          EDIT: Save report as assets/airbus-report.pdf
+        -->
+        <a class="project-card featured reveal" href="assets/airbus-report.pdf" target="_blank" style="grid-column:span 2;">
+          <span class="project-link-hint">Open Report ↗</span>
+          <div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;">
+              <span class="tag tag-blue">Enterprise Risk Assessment</span>
+              <span class="tag tag-blue">IRM Level 1</span>
+            </div>
+            <h3 style="font-family:var(--serif);font-size:30px;font-weight:300;line-height:1.2;">Airbus SE — Enterprise Risk Assessment</h3>
+          </div>
+          <div class="project-body">
+            <ul class="project-highlights">
+              <li>Led an in-depth enterprise risk assessment for Airbus Commercial Aircraft, synthesising 178+ risk factors into 25 material risks through structured analysis using SWOT, VRIO, Porter's Five Forces, and risk modelling frameworks.</li>
+              <li>Evaluated complex operational, strategic, and supply chain interdependencies to prioritise risks and design actionable mitigation recommendations focused on long-term resilience and decision-making.</li>
+            </ul>
+            <div class="project-footer">
+              <span class="project-meta">Enterprise Risk Management · IRM Level 1 Certification · Mahindra University</span>
+            </div>
+          </div>
+        </a>
 
       </div>
     </div>
@@ -1234,71 +1210,60 @@
 
 
   <!-- ============================================================
-       SECTION 5 — CERTIFICATIONS & SKILLS
-       EDIT: Add/remove .cert-item blocks; add/remove .skill-pill spans.
-       "advanced" class on a skill pill = filled blue (top skills).
+       SECTION 6 — CERTIFICATIONS & SKILLS
   ============================================================ -->
   <section id="certifications" class="section">
     <div class="container">
       <div class="section-header reveal">
         <div>
-          <span class="eyebrow">05 — Verified Expertise</span>
+          <span class="eyebrow">06 — Verified Expertise</span>
           <h2 class="section-title">Skills & <em>Credentials</em></h2>
         </div>
         <p class="section-desc">External certifications, technical capabilities, and domain knowledge built through coursework and practice.</p>
       </div>
-
       <div class="certs-layout">
 
-        <!-- LEFT: Certifications -->
         <div class="reveal">
           <h3 class="certs-col-title">Certifications & Courses</h3>
-
           <div class="cert-item">
             <div class="cert-icon">🏛️</div>
             <div class="cert-info">
               <h4>Enterprise Risk Management — Level 1</h4>
-              <p>Institute of Risk Management (IRM) · 2024<br>Delivered a 100-point Risk Analysis Report for Airbus SE as live coursework.</p>
+              <p>Institute of Risk Management (IRM) · 2024 · Live project: 100-point risk analysis for Airbus SE.</p>
             </div>
           </div>
-
           <div class="cert-item">
             <div class="cert-icon">🌍</div>
             <div class="cert-info">
               <h4>UNCC Climate Change Certification</h4>
-              <p>United Nations CC · Oct 2023<br>Corporate, national, and international sustainability policy; integrating ESG into business strategy.</p>
+              <p>United Nations CC · Oct 2023 · Corporate, national, and international sustainability policy; ESG integration.</p>
             </div>
           </div>
-
           <div class="cert-item">
             <div class="cert-icon">📈</div>
             <div class="cert-info">
               <h4>Options Trading Workshop</h4>
-              <p>Dr. Sanjay Mansabdar · Mahindra University · 2025<br>In-depth study of options trading strategies, derivatives pricing, and real-world market applications.</p>
+              <p>Dr. Sanjay Mansabdar · Mahindra University · 2025 · Options trading strategies, derivatives pricing, and real-world market applications.</p>
             </div>
           </div>
-
           <div class="cert-item">
             <div class="cert-icon">🎓</div>
             <div class="cert-info">
               <h4>Finance Workshop — M&A & Financial Theory</h4>
-              <p>Dr. Drew David Pascarella · SC Johnson College, Cornell University · 2024<br>Mergers & Acquisitions, financial modelling, and corporate finance theory.</p>
+              <p>Dr. Drew David Pascarella · SC Johnson College, Cornell University · 2024 · M&A fundamentals and financial modelling.</p>
             </div>
           </div>
-
           <div class="cert-item">
             <div class="cert-icon">🌐</div>
             <div class="cert-info">
               <h4>Marketplace Simulations — Entrepreneurship</h4>
-              <p>Global Simulation · 2024 · <strong style="color:var(--accent);">Top 3 Percentile Worldwide</strong><br>Built and scaled a venture in a live global entrepreneurship simulation.</p>
+              <p>Global Simulation · 2024 · <strong style="color:var(--accent);">Top 3 Percentile Worldwide</strong></p>
             </div>
           </div>
         </div>
 
-        <!-- RIGHT: Skills -->
         <div class="reveal reveal-d1">
           <h3 class="certs-col-title">Skills</h3>
-
           <div class="skills-category">
             <span class="skills-cat-label">Technical & Tools</span>
             <div class="skills-pills">
@@ -1318,7 +1283,6 @@
               <span class="skill-pill">Data Visualization</span>
             </div>
           </div>
-
           <div class="skills-category">
             <span class="skills-cat-label">Strategy & Business</span>
             <div class="skills-pills">
@@ -1332,7 +1296,6 @@
               <span class="skill-pill">E-commerce</span>
             </div>
           </div>
-
           <div class="skills-category">
             <span class="skills-cat-label">Communication & Leadership</span>
             <div class="skills-pills">
@@ -1353,52 +1316,41 @@
 
 
   <!-- ============================================================
-       SECTION 6 — EXTRA-CURRICULARS
-       EDIT: Each .ec-card is one activity. Add/remove freely.
+       SECTION 7 — EXTRA-CURRICULARS
   ============================================================ -->
   <section id="extracurriculars" class="section">
     <div class="container">
       <div class="section-header reveal">
         <div>
-          <span class="eyebrow">06 — Extra-Curriculars</span>
+          <span class="eyebrow">07 — Extra-Curriculars</span>
           <h2 class="section-title">Beyond the <em>Classroom</em></h2>
         </div>
         <p class="section-desc">Competition wins, editorial work, and academic achievements that complete the picture.</p>
       </div>
-
       <div class="ec-grid">
 
         <div class="ec-card reveal">
           <span class="ec-emoji">🎤</span>
           <h3>University Debate Championship</h3>
-          <span class="ec-role">Winner — University-Wide Competition</span>
-          <p>Won the university-wide debate competition, demonstrating structured argumentation, on-the-spot reasoning, and persuasive communication under competitive pressure.</p>
-          <div class="ec-stat">
-            <span class="ec-stat-num">🏆</span>
-            <span class="ec-stat-label">Winner · Mahindra University</span>
-          </div>
+          <span class="ec-role">Winner — University-Wide</span>
+          <p>Won the university-wide debate competition, demonstrating structured argumentation, on-the-spot reasoning, and persuasive communication under pressure.</p>
+          <div class="ec-stat"><span class="ec-stat-num">🏆</span><span class="ec-stat-label">Winner · Mahindra University</span></div>
         </div>
 
         <div class="ec-card reveal reveal-d1">
           <span class="ec-emoji">🚗</span>
           <h3>General Motors Case Competition</h3>
-          <span class="ec-role">Winner · Mahindra University</span>
+          <span class="ec-role">Winner · MU-Hosted Competition</span>
           <p>Won the General Motors case competition hosted by Mahindra University, recognised for analytical rigour and structured problem-solving in a real-world business scenario.</p>
-          <div class="ec-stat">
-            <span class="ec-stat-num">🥇</span>
-            <span class="ec-stat-label">Recognised for structured problem-solving</span>
-          </div>
+          <div class="ec-stat"><span class="ec-stat-num">🥇</span><span class="ec-stat-label">Winner · Analytical Excellence</span></div>
         </div>
 
         <div class="ec-card reveal reveal-d2">
           <span class="ec-emoji">🌐</span>
           <h3>Marketplace Simulations</h3>
-          <span class="ec-role">Top 3% Globally — Entrepreneurship Simulation</span>
-          <p>Achieved a top 3 percentile score worldwide in the Marketplace Simulations global entrepreneurship program, competing against thousands of students across international universities.</p>
-          <div class="ec-stat">
-            <span class="ec-stat-num">Top 3%</span>
-            <span class="ec-stat-label">Global ranking</span>
-          </div>
+          <span class="ec-role">Top 3% Globally</span>
+          <p>Achieved a top 3 percentile score worldwide in the Marketplace Simulations global entrepreneurship program, competing against thousands across international universities.</p>
+          <div class="ec-stat"><span class="ec-stat-num">Top 3%</span><span class="ec-stat-label">Global ranking</span></div>
         </div>
 
         <div class="ec-card reveal">
@@ -1406,32 +1358,15 @@
           <h3>The Echo — Opinion Forum</h3>
           <span class="ec-role">Editor & Author · Sep '24 – Aug '25</span>
           <p>Edited and wrote multiple published articles for Mahindra University's official newspaper — covering business, policy, and campus affairs with an opinion and analysis focus.</p>
-          <div class="ec-stat">
-            <span class="ec-stat-num">Multi</span>
-            <span class="ec-stat-label">Published articles · editorial + authorship</span>
-          </div>
+          <div class="ec-stat"><span class="ec-stat-num">Multi</span><span class="ec-stat-label">Published articles · editorial + authorship</span></div>
         </div>
 
-        <div class="ec-card reveal reveal-d1">
+        <div class="ec-card reveal reveal-d1" style="grid-column:span 2;">
           <span class="ec-emoji">🍳</span>
           <h3>Cloud Kitchen — Live Startup</h3>
           <span class="ec-role">CEO · Principles of Management Live Project</span>
-          <p>Served as CEO of a live startup built from scratch — covering ideation, branding, marketing, hiring, legal processing, and financial planning end-to-end as part of a course-embedded venture project.</p>
-          <div class="ec-stat">
-            <span class="ec-stat-num">0→1</span>
-            <span class="ec-stat-label">End-to-end venture build</span>
-          </div>
-        </div>
-
-        <div class="ec-card reveal reveal-d2">
-          <span class="ec-emoji">✈️</span>
-          <h3>Airbus SE — Risk Analysis</h3>
-          <span class="ec-role">Live Project · IRM Level 1 Certification</span>
-          <p>Created a comprehensive 100-point Risk Analysis Report for Airbus SE covering operational, financial, strategic, and compliance risk dimensions as the live capstone for the IRM Level 1 certification.</p>
-          <div class="ec-stat">
-            <span class="ec-stat-num">100pt</span>
-            <span class="ec-stat-label">Risk analysis · Airbus SE</span>
-          </div>
+          <p>Served as CEO of a live startup built from the ground up — covering ideation, branding, marketing, hiring, legal processing, and financial planning end-to-end as a course-embedded venture project.</p>
+          <div class="ec-stat"><span class="ec-stat-num">0→1</span><span class="ec-stat-label">End-to-end venture build</span></div>
         </div>
 
       </div>
@@ -1439,16 +1374,13 @@
   </section>
 
 
-  <!-- ============================================================
-       FOOTER
-       EDIT: Update email address and copyright year as needed.
-  ============================================================ -->
+  <!-- ── FOOTER ── -->
   <footer>
     <div class="container">
       <div class="footer-inner">
         <span class="footer-name">Chanakya <em>Naidu</em></span>
         <div class="footer-links">
-          <!-- EDIT: Replace with your real email -->
+          <!-- EDIT: Replace with your actual email -->
           <a href="mailto:your.email@example.com">Email</a>
           <a href="https://linkedin.com/in/chanakya-naidu" target="_blank">LinkedIn</a>
           <a href="assets/resume.pdf" target="_blank">View Resume</a>
@@ -1461,85 +1393,224 @@
 
 
   <!-- ============================================================
-       JAVASCRIPT — All interactive behaviour.
-       You don't need to edit or understand this section.
-       Just don't delete it — the animations won't work without it.
+       JAVASCRIPT
+       You don't need to edit most of this.
+       THE ONE PART YOU MUST EDIT is the GRADES DATA section below.
   ============================================================ -->
   <script>
-    // ── 1. SCROLL PROGRESS BAR ──────────────────────────────────
-    // Calculates what % of the page has been scrolled and fills
-    // the thin bar at the top of the screen proportionally.
+
+    /* ============================================================
+       GRADES DATA — EDIT THIS SECTION
+       ============================================================
+       Add your real grades here. Each entry has:
+         course: the course name (keep it short for the ticker)
+         grade:  your letter grade (A+, A, B+, B, etc.)
+         sem:    the semester label — used to group them in the table
+
+       Indian university scale for reference:
+         O / A+ = 10    A  = 9    B+ = 8    B = 7    C = 6
+
+       HOW TO ADD A COURSE: copy any line inside the array and
+       paste it, then change the values. Make sure to add a comma
+       after each entry EXCEPT the last one.
+    ============================================================ */
+    const gradesData = [
+      /* ── Semester 1 ── */
+      { sem:"Semester 1",  course:"Earth & Environment",           grade:"A"  },
+      { sem:"Semester 1",  course:"Principles of Marketing",       grade:"A+" },
+      { sem:"Semester 1",  course:"Principles of Management",      grade:"A+" },
+      { sem:"Semester 1",  course:"Financial Accounting",          grade:"A"  },
+      { sem:"Semester 1",  course:"Business Communication",        grade:"A+" },
+      { sem:"Semester 1",  course:"Microeconomics",                grade:"A"  },
+      { sem:"Semester 1",  course:"Introduction to Statistics",    grade:"A"  },
+
+      /* ── Semester 2 ── */
+      { sem:"Semester 2",  course:"Basics of Computing",           grade:"A+" },
+      { sem:"Semester 2",  course:"DBMS",                          grade:"A"  },
+      { sem:"Semester 2",  course:"Entrepreneurship",              grade:"A+" },
+      { sem:"Semester 2",  course:"Corporate Finance",             grade:"A"  },
+      { sem:"Semester 2",  course:"Ethics, CSR & Sustainability",  grade:"A+" },
+      { sem:"Semester 2",  course:"Macroeconomics",                grade:"A"  },
+      { sem:"Semester 2",  course:"Spreadsheet Modelling",         grade:"A+" },
+
+      /* ── Semester 3 ── */
+      { sem:"Semester 3",  course:"Financial Markets & Fintech",   grade:"A"  },
+      { sem:"Semester 3",  course:"UI/UX Design Principles",       grade:"A+" },
+      { sem:"Semester 3",  course:"Digital Marketing",             grade:"A+" },
+      { sem:"Semester 3",  course:"Research Techniques",           grade:"A+" },
+      { sem:"Semester 3",  course:"Business Strategy",             grade:"A"  },
+      { sem:"Semester 3",  course:"E-commerce",                    grade:"A"  },
+
+      /* ── Semester 4 ── */
+      { sem:"Semester 4",  course:"Storytelling for Business",     grade:"A+" },
+      { sem:"Semester 4",  course:"Digital Marketing 2",           grade:"A+" },
+      { sem:"Semester 4",  course:"Data Warehousing & BI",         grade:"A"  },
+      { sem:"Semester 4",  course:"Enterprise Risk Management",    grade:"A+" },
+      { sem:"Semester 4",  course:"Python",                        grade:"A"  },
+      { sem:"Semester 4",  course:"Management Info. Systems",      grade:"A"  },
+
+      /* ── Semester 5 ── */
+      { sem:"Semester 5",  course:"Finance Workshop (Cornell)",    grade:"A+" },
+      { sem:"Semester 5",  course:"Management Consulting",         grade:"A+" },
+      { sem:"Semester 5",  course:"Marketing Analytics",           grade:"A"  },
+      { sem:"Semester 5",  course:"Connected Technologies",        grade:"A"  },
+      { sem:"Semester 5",  course:"Product & Operations Mgmt",     grade:"A"  },
+      { sem:"Semester 5",  course:"Customer Experience",           grade:"A+" }
+    ];
+    /* ── END OF GRADES DATA ── */
+
+
+    /* ── BUILD TICKER ──────────────────────────────────────────
+       Turns the grades array above into a scrolling text strip.
+       It duplicates the content so the loop is seamless.
+    ──────────────────────────────────────────────────────────── */
+    function buildTicker() {
+      const inner = document.getElementById('ticker-inner');
+      if (!inner) return;
+
+      // Build one copy of all course items
+      let html = '';
+      gradesData.forEach((item, i) => {
+        if (i > 0) html += '<span class="ticker-sep">|</span>';
+        html += `<span class="ticker-item">${item.course} <span class="ticker-grade">${item.grade}</span></span>`;
+      });
+
+      // Duplicate it — this makes the scroll loop seamless
+      inner.innerHTML = html + '<span class="ticker-sep" style="padding:0 32px;"></span>' + html;
+    }
+    buildTicker();
+
+
+    /* ── BUILD MODAL TABLE ─────────────────────────────────────
+       Turns the grades array into a grouped HTML table for the popup.
+    ──────────────────────────────────────────────────────────── */
+    function buildModal() {
+      const container = document.getElementById('modal-table-container');
+      if (!container) return;
+
+      // Group courses by semester
+      const groups = {};
+      gradesData.forEach(item => {
+        if (!groups[item.sem]) groups[item.sem] = [];
+        groups[item.sem].push(item);
+      });
+
+      let html = '';
+      Object.keys(groups).forEach(sem => {
+        html += `<p class="modal-sem">${sem}</p>`;
+        html += `<table class="grades-table">`;
+        groups[sem].forEach(item => {
+          html += `<tr><td>${item.course}</td><td>${item.grade}</td></tr>`;
+        });
+        html += `</table>`;
+      });
+
+      container.innerHTML = html;
+    }
+    buildModal();
+
+
+    /* ── MODAL OPEN / CLOSE ──────────────────────────────────── */
+    const ticker   = document.getElementById('grades-ticker');
+    const modal    = document.getElementById('grades-modal');
+    const modalClose = document.getElementById('modal-close');
+
+    // Open when ticker is clicked
+    ticker.addEventListener('click', () => {
+      modal.classList.add('open');
+      document.body.style.overflow = 'hidden'; // prevent page scroll while modal is open
+    });
+
+    // Close with the × button
+    modalClose.addEventListener('click', () => {
+      modal.classList.remove('open');
+      document.body.style.overflow = '';
+    });
+
+    // Close when clicking the dark backdrop (outside the card)
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) {
+        modal.classList.remove('open');
+        document.body.style.overflow = '';
+      }
+    });
+
+    // Close with Escape key
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        modal.classList.remove('open');
+        document.body.style.overflow = '';
+      }
+    });
+
+
+    /* ── RECOMMENDATIONS SCROLL ARROWS ──────────────────────── */
+    const recTrack = document.getElementById('rec-track');
+    const recPrev  = document.getElementById('rec-prev');
+    const recNext  = document.getElementById('rec-next');
+
+    if (recTrack && recNext && recPrev) {
+      // Calculate how far to scroll — roughly one card width
+      const getScrollAmount = () => recTrack.querySelector('.rec-card')?.offsetWidth + 20 || 420;
+
+      recNext.addEventListener('click', () => {
+        recTrack.scrollBy({ left: getScrollAmount(), behavior: 'smooth' });
+      });
+      recPrev.addEventListener('click', () => {
+        recTrack.scrollBy({ left: -getScrollAmount(), behavior: 'smooth' });
+      });
+    }
+
+
+    /* ── SCROLL PROGRESS BAR ──────────────────────────────────── */
     const progressBar = document.getElementById('progress-bar');
     window.addEventListener('scroll', () => {
       const scrolled = window.scrollY;
-      const total = document.documentElement.scrollHeight - window.innerHeight;
+      const total    = document.documentElement.scrollHeight - window.innerHeight;
       progressBar.style.width = ((scrolled / total) * 100) + '%';
     }, { passive: true });
 
-    // ── 2. NAV SHADOW ON SCROLL ─────────────────────────────────
-    // Adds a subtle drop shadow to the nav bar once you scroll down.
-    const mainNav = document.getElementById('main-nav');
+
+    /* ── NAV SHADOW + ACTIVE LINK ─────────────────────────────── */
+    const mainNav  = document.getElementById('main-nav');
+    const sections = document.querySelectorAll('section[id]');
+    const navLinks = document.querySelectorAll('.nav-links a[href^="#"]');
+
     window.addEventListener('scroll', () => {
       mainNav.classList.toggle('scrolled', window.scrollY > 40);
-    }, { passive: true });
-
-    // ── 3. ACTIVE NAV LINK HIGHLIGHT ────────────────────────────
-    // Figures out which section is currently on screen and
-    // highlights the matching nav link with the blue underline.
-    const sections     = document.querySelectorAll('section[id]');
-    const navAnchors   = document.querySelectorAll('.nav-links a[href^="#"]');
-    window.addEventListener('scroll', () => {
       let current = '';
-      sections.forEach(s => {
-        if (window.scrollY >= s.offsetTop - 120) current = s.id;
-      });
-      navAnchors.forEach(a => {
-        a.classList.toggle('active', a.getAttribute('href') === '#' + current);
-      });
+      sections.forEach(s => { if (window.scrollY >= s.offsetTop - 120) current = s.id; });
+      navLinks.forEach(a => { a.classList.toggle('active', a.getAttribute('href') === '#' + current); });
     }, { passive: true });
 
-    // ── 4. SCROLL REVEAL ANIMATION ──────────────────────────────
-    // Watches all elements with class "reveal". When they scroll
-    // into view, adds "visible" which triggers the CSS fade-up.
-    const observer = new IntersectionObserver(entries => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('visible');
-          observer.unobserve(entry.target); // animate only once
-        }
+
+    /* ── SCROLL REVEAL ────────────────────────────────────────── */
+    const revealObs = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) { e.target.classList.add('visible'); revealObs.unobserve(e.target); }
       });
     }, { threshold: 0.08 });
-    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+    document.querySelectorAll('.reveal').forEach(el => revealObs.observe(el));
 
-    // ── 5. MOBILE HAMBURGER MENU ────────────────────────────────
-    // Opens and closes the mobile dropdown navigation.
+
+    /* ── MOBILE HAMBURGER ─────────────────────────────────────── */
     const hamburger  = document.getElementById('hamburger');
     const mobileMenu = document.getElementById('mobile-nav');
-    hamburger.addEventListener('click', () => {
-      mobileMenu.classList.toggle('open');
-    });
-    // This function is called by onclick attributes in the mobile menu links
-    function closeMobileNav() {
-      mobileMenu.classList.remove('open');
-    }
-    // Close the menu if user taps anywhere outside of it
+    hamburger.addEventListener('click', () => mobileMenu.classList.toggle('open'));
+    function closeMobileNav() { mobileMenu.classList.remove('open'); }
     document.addEventListener('click', e => {
-      if (!hamburger.contains(e.target) && !mobileMenu.contains(e.target)) {
-        mobileMenu.classList.remove('open');
-      }
+      if (!hamburger.contains(e.target) && !mobileMenu.contains(e.target)) mobileMenu.classList.remove('open');
     });
 
-    // ── 6. HERO PARALLAX ────────────────────────────────────────
-    // Makes the decorative gradient blobs behind the hero text
-    // drift slightly as you scroll — creates subtle depth.
+
+    /* ── HERO PARALLAX ────────────────────────────────────────── */
     const landing = document.getElementById('landing');
     window.addEventListener('scroll', () => {
       if (window.scrollY < window.innerHeight * 1.2) {
-        const shift = window.scrollY * 0.25;
-        landing.style.setProperty('--parallax-y', shift + 'px');
+        landing.style.backgroundPositionY = (window.scrollY * 0.25) + 'px';
       }
     }, { passive: true });
-  </script>
 
+  </script>
 </body>
 </html>
