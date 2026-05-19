@@ -35,7 +35,8 @@
     /* ── RESET ── */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html { scroll-behavior: smooth; }
-    body { background:var(--bg); color:var(--text); font-family:var(--sans); font-size:16px; line-height:1.7; font-weight:300; -webkit-font-smoothing:antialiased; overflow-x:hidden; }
+    /* Background is transparent — the WebGL canvas (#bg-canvas) renders the actual background */
+    body { background:transparent; color:var(--text); font-family:var(--sans); font-size:16px; line-height:1.7; font-weight:300; -webkit-font-smoothing:antialiased; overflow-x:hidden; }
     img { display:block; max-width:100%; }
     a { color:inherit; text-decoration:none; }
 
@@ -235,7 +236,8 @@
       background:var(--bg-subtle);
       display:flex; align-items:center; justify-content:center;
     }
-    .rec-photo img { width:100%; height:100%; object-fit:cover; }
+    /* Explicit px sizes override the global img reset and fill the circle reliably */
+    .rec-photo img { display:block; width:52px; height:52px; min-width:52px; min-height:52px; object-fit:cover; border-radius:50%; flex-shrink:0; }
 
     /* Initials fallback if no photo */
     .rec-photo-initials {
@@ -405,8 +407,8 @@
       transition:box-shadow .3s,transform .3s,border-color .3s;
       position:relative; overflow:hidden;
     }
-    /* Clickable card — the whole card is a link */
-    a.project-card { display:flex; cursor:pointer; }
+    /* Clickable card — the whole card is a link. Must restate flex-direction because <a> is inline by default */
+    a.project-card { display:flex; flex-direction:column; gap:16px; cursor:pointer; }
     a.project-card:hover { box-shadow:var(--shadow-hover); transform:translateY(-5px); border-color:rgba(0,86,152,.2); }
     div.project-card:hover { box-shadow:var(--shadow-hover); transform:translateY(-5px); border-color:rgba(0,86,152,.2); }
 
@@ -452,6 +454,18 @@
     .certs-col-title { font-family:var(--serif); font-size:22px; font-weight:400; margin-bottom:24px; padding-bottom:16px; border-bottom:1px solid var(--border); }
     .cert-item { display:flex; align-items:flex-start; gap:18px; padding:20px; border:1px solid var(--border); border-radius:var(--radius-sm); background:var(--bg-card); margin-bottom:14px; transition:border-color .3s,box-shadow .3s,transform .3s; }
     .cert-item:hover { border-color:rgba(0,86,152,.25); box-shadow:var(--shadow); transform:translateX(5px); }
+    /* Clickable cert card — wraps cert-item in an <a> tag */
+    a.cert-item { cursor:pointer; text-decoration:none; color:inherit; display:flex; }
+    a.cert-item:hover { border-color:var(--accent); }
+    /* Small "open certificate" pill — appears on hover of clickable certs */
+    .cert-open-hint {
+      display:none;
+      font-size:10px; font-weight:500; letter-spacing:.08em; text-transform:uppercase;
+      color:var(--accent); background:var(--accent-lt);
+      padding:3px 8px; border-radius:99px;
+      margin-top:6px;
+    }
+    a.cert-item:hover .cert-open-hint { display:inline-block; }
     .cert-icon { width:44px; height:44px; background:var(--accent-lt); border-radius:50%; display:flex; align-items:center; justify-content:center; flex-shrink:0; font-size:18px; }
     .cert-info h4 { font-family:var(--serif); font-size:18px; font-weight:400; margin-bottom:3px; }
     .cert-info p { font-size:12px; color:var(--muted); line-height:1.65; }
@@ -528,6 +542,14 @@
 
   <div id="progress-bar"></div>
 
+  <!--
+    BACKGROUND SHADER CANVAS
+    This is the live grainy background that reacts to your cursor.
+    It sits at z-index:-1 so it's always behind all content.
+    You don't need to edit anything here.
+  -->
+  <canvas id="bg-canvas" style="position:fixed;inset:0;width:100%;height:100%;z-index:-1;display:block;pointer-events:none;"></canvas>
+
   <!-- ── NAV ── -->
   <nav id="main-nav">
     <div class="nav-inner">
@@ -591,10 +613,9 @@
         </div>
 
         <div class="photo-frame reveal reveal-d2">
+          <!-- Your professional photo — saved as assets/photo.jpg -->
           <img src="assets/photo.jpg" alt="Chanakya Naidu" />
-            <svg width="40" height="40" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1" opacity=".35"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
-            Add photo.jpg to assets/
-          </div>
+          <!-- Floating GPA badge — sits over the bottom-left of the photo -->
           <div class="photo-badge">
             <div class="photo-badge-icon">🎓</div>
             <div class="photo-badge-text">
@@ -927,8 +948,14 @@
 
         <div class="timeline-item reveal">
           <div class="timeline-left">
+            <!--
+              LOGO: Save The Echo's logo as assets/echo-logo.png (or .jpg)
+              If not available, the newspaper emoji shows as fallback.
+            -->
             <div class="timeline-logo" style="background:var(--bg-subtle);">
-              <span class="timeline-logo-fallback">📰</span>
+              <img src="assets/echo-logo.png" alt="The Echo"
+                onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" />
+              <span class="timeline-logo-fallback" style="display:none;">📰</span>
             </div>
             <p class="timeline-date">Sep '24 – Aug '25</p>
             <span class="timeline-badge">Editorial</span>
@@ -946,8 +973,14 @@
 
         <div class="timeline-item education reveal">
           <div class="timeline-left">
+            <!--
+              LOGO: Save Mahindra University's logo as assets/mu-logo.png (or .jpg)
+              If not available, the graduation emoji shows as fallback.
+            -->
             <div class="timeline-logo" style="background:var(--accent-lt);">
-              <span class="timeline-logo-fallback" style="font-size:20px;">🎓</span>
+              <img src="assets/mu-logo.png" alt="Mahindra University"
+                onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" />
+              <span class="timeline-logo-fallback" style="display:none;font-size:20px;">🎓</span>
             </div>
             <p class="timeline-date">Aug '23 – Jun '26</p>
             <span class="timeline-badge">Education</span>
@@ -1219,20 +1252,29 @@
 
         <div class="reveal">
           <h3 class="certs-col-title">Certifications & Courses</h3>
-          <div class="cert-item">
+          <!--
+            CERT LINK: Save your ERM certificate PDF as assets/erm-cert.pdf
+            The whole card becomes clickable and opens the certificate.
+          -->
+          <a class="cert-item" href="assets/erm-cert.pdf" target="_blank">
             <div class="cert-icon">🏛️</div>
             <div class="cert-info">
               <h4>Enterprise Risk Management — Level 1</h4>
               <p>Institute of Risk Management (IRM) · 2024 · Live project: 100-point risk analysis for Airbus SE.</p>
+              <span class="cert-open-hint">Open Certificate ↗</span>
             </div>
-          </div>
-          <div class="cert-item">
+          </a>
+          <!--
+            CERT LINK: Save your UNCC certificate PDF as assets/uncc-cert.pdf
+          -->
+          <a class="cert-item" href="assets/uncc-cert.pdf" target="_blank">
             <div class="cert-icon">🌍</div>
             <div class="cert-info">
               <h4>UNCC Climate Change Certification</h4>
               <p>United Nations CC · Oct 2023 · Corporate, national, and international sustainability policy; ESG integration.</p>
+              <span class="cert-open-hint">Open Certificate ↗</span>
             </div>
-          </div>
+          </a>
           <div class="cert-item">
             <div class="cert-icon">📈</div>
             <div class="cert-info">
@@ -1607,6 +1649,207 @@
         landing.style.backgroundPositionY = (window.scrollY * 0.25) + 'px';
       }
     }, { passive: true });
+
+
+    /* ============================================================
+       BACKGROUND SHADER (WebGL)
+       ============================================================
+       Creates a live, cursor-reactive grainy background using WebGL.
+       The beige color (#faf8f4) is baked into the shader so it
+       exactly matches --bg. The effect stays VERY subtle:
+         · Film grain:   ~1.5% brightness variation per pixel
+         · Cursor glow:  ~1.5% blue tint at cursor position (max)
+         · Drifting noise: ~1% slow organic movement
+         · Edge vignette: ~3% darkening at corners
+       All content stays sharp — only the bare background is affected.
+       If WebGL is unavailable, the body falls back to --bg color.
+    ============================================================ */
+    (function initShader() {
+      const canvas = document.getElementById('bg-canvas');
+      if (!canvas) return;
+
+      // Try to get a WebGL context. If it fails, show solid background.
+      const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+      if (!gl) {
+        document.body.style.background = 'var(--bg)';
+        return;
+      }
+
+      /* ── VERTEX SHADER ──────────────────────────────────────────
+         Draws a fullscreen quad (two triangles covering the screen).
+         'a_pos' are clip-space coordinates from -1 to +1.
+      ────────────────────────────────────────────────────────────── */
+      const vertSrc = `
+        attribute vec2 a_pos;
+        void main() {
+          gl_Position = vec4(a_pos, 0.0, 1.0);
+        }
+      `;
+
+      /* ── FRAGMENT SHADER ────────────────────────────────────────
+         Runs once per pixel of the canvas.
+         Uniforms (values passed from JS each frame):
+           u_res   : canvas size in pixels
+           u_mouse : cursor position in pixels (origin bottom-left)
+           u_time  : seconds since page load
+      ────────────────────────────────────────────────────────────── */
+      const fragSrc = `
+        precision mediump float;
+
+        uniform vec2  u_res;    /* canvas width, height in px     */
+        uniform vec2  u_mouse;  /* cursor x, y in px              */
+        uniform float u_time;   /* elapsed seconds                */
+
+        /* ── Hash / pseudo-random ────────────────────────────── */
+        float hash(vec2 p) {
+          return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453);
+        }
+
+        /* ── Smooth value noise (2D) ─────────────────────────── */
+        float noise(vec2 p) {
+          vec2 i = floor(p);
+          vec2 f = fract(p);
+          /* Smooth interpolation (smoothstep) */
+          vec2 u = f * f * (3.0 - 2.0 * f);
+          return mix(
+            mix(hash(i),               hash(i + vec2(1.0, 0.0)), u.x),
+            mix(hash(i + vec2(0.0,1.0)), hash(i + vec2(1.0, 1.0)), u.x),
+            u.y
+          );
+        }
+
+        void main() {
+          /* UV: 0–1 across the canvas, origin bottom-left */
+          vec2 uv    = gl_FragCoord.xy / u_res;
+          vec2 mouse = u_mouse         / u_res;
+
+          /* ── Base color: exactly #faf8f4 ──────────────────── */
+          vec3 color = vec3(0.9804, 0.9725, 0.9569);
+
+          /* ── Subtle cursor glow ───────────────────────────── */
+          /* The accent blue (#005698) tints the area around the cursor.
+             smoothstep: glow is 0 when cursor is >50% of canvas away,
+             rises to max at cursor position. Max strength: 1.5%.       */
+          float dist  = distance(uv, mouse);
+          float glow  = smoothstep(0.55, 0.0, dist) * 0.015;
+          color += vec3(0.0, 0.086, 0.188) * glow;
+
+          /* ── Slow organic drift ───────────────────────────── */
+          /* Two layers of noise at different scales/speeds,
+             combined to create a gentle cloud-like movement.
+             Max contribution: ~1.0% brightness change.                  */
+          float t  = u_time * 0.06;
+          float n1 = noise(uv * 2.5 + vec2(t,        t * 0.6));
+          float n2 = noise(uv * 5.0 - vec2(t * 0.4,  t * 1.1));
+          float org = (n1 * 0.55 + n2 * 0.45 - 0.5) * 0.010;
+          color += org;
+
+          /* ── Film grain ───────────────────────────────────── */
+          /* hash() seeded with uv + a rapidly changing time value
+             gives a different random number every frame per pixel.
+             Max contribution: ±0.75% brightness change.                 */
+          float grain = (hash(uv + fract(u_time * 17.3)) - 0.5) * 0.015;
+          color += grain;
+
+          /* ── Edge vignette ────────────────────────────────── */
+          /* Gentle darkening at the corners — draws focus inward.
+             Max darkening: ~3% at the very corners.                     */
+          float vig = smoothstep(0.0, 0.75, distance(uv, vec2(0.5, 0.5)));
+          color -= vig * 0.03;
+
+          /* Clamp to valid color range and output */
+          gl_FragColor = vec4(clamp(color, 0.0, 1.0), 1.0);
+        }
+      `;
+
+      /* ── Compile a shader ─────────────────────────────────────── */
+      function compile(type, src) {
+        const s = gl.createShader(type);
+        gl.shaderSource(s, src);
+        gl.compileShader(s);
+        if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) {
+          console.warn('Shader compile error:', gl.getShaderInfoLog(s));
+          gl.deleteShader(s);
+          return null;
+        }
+        return s;
+      }
+
+      const vert = compile(gl.VERTEX_SHADER,   vertSrc);
+      const frag = compile(gl.FRAGMENT_SHADER, fragSrc);
+      if (!vert || !frag) { document.body.style.background = 'var(--bg)'; return; }
+
+      /* ── Link program ─────────────────────────────────────────── */
+      const prog = gl.createProgram();
+      gl.attachShader(prog, vert);
+      gl.attachShader(prog, frag);
+      gl.linkProgram(prog);
+      if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) {
+        console.warn('Shader link error:', gl.getProgramInfoLog(prog));
+        document.body.style.background = 'var(--bg)';
+        return;
+      }
+      gl.useProgram(prog);
+
+      /* ── Fullscreen quad geometry ─────────────────────────────── */
+      /* Two triangles that cover clip space (-1 to +1 in x and y)  */
+      const buf = gl.createBuffer();
+      gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
+        -1,-1,  1,-1,  -1,1,   /* triangle 1 */
+        -1, 1,  1,-1,   1,1    /* triangle 2 */
+      ]), gl.STATIC_DRAW);
+
+      const aPos = gl.getAttribLocation(prog, 'a_pos');
+      gl.enableVertexAttribArray(aPos);
+      gl.vertexAttribPointer(aPos, 2, gl.FLOAT, false, 0, 0);
+
+      /* ── Uniform locations ────────────────────────────────────── */
+      const uRes   = gl.getUniformLocation(prog, 'u_res');
+      const uMouse = gl.getUniformLocation(prog, 'u_mouse');
+      const uTime  = gl.getUniformLocation(prog, 'u_time');
+
+      /* ── Track cursor position ────────────────────────────────── */
+      /* WebGL origin is bottom-left, browser origin is top-left,
+         so we flip the Y coordinate.                                 */
+      let mouseX = window.innerWidth  / 2;
+      let mouseY = window.innerHeight / 2;
+      let targetX = mouseX, targetY = mouseY;
+
+      window.addEventListener('mousemove', e => {
+        targetX = e.clientX;
+        targetY = window.innerHeight - e.clientY; /* flip Y */
+      }, { passive: true });
+
+      /* ── Resize handler ───────────────────────────────────────── */
+      function resize() {
+        canvas.width  = window.innerWidth;
+        canvas.height = window.innerHeight;
+        gl.viewport(0, 0, canvas.width, canvas.height);
+      }
+      resize();
+      window.addEventListener('resize', resize, { passive: true });
+
+      /* ── Render loop ──────────────────────────────────────────── */
+      const startTime = performance.now();
+
+      function render() {
+        /* Smoothly lerp the mouse position so the glow follows with inertia */
+        mouseX += (targetX - mouseX) * 0.06;
+        mouseY += (targetY - mouseY) * 0.06;
+
+        const elapsed = (performance.now() - startTime) / 1000; /* seconds */
+
+        gl.uniform2f(uRes,   canvas.width, canvas.height);
+        gl.uniform2f(uMouse, mouseX,       mouseY);
+        gl.uniform1f(uTime,  elapsed);
+
+        gl.drawArrays(gl.TRIANGLES, 0, 6);
+        requestAnimationFrame(render);
+      }
+
+      render();
+    })(); /* end initShader */
 
   </script>
 </body>
